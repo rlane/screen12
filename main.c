@@ -11,6 +11,9 @@
 #include "mruby/compile.h"
 #include "mruby/dump.h"
 
+static void api_register(mrb_state *mrb);
+static SDL_Surface *screen;
+
 int main(int argc, char **argv)
 {
     mrb_state *mrb = mrb_open();
@@ -44,17 +47,32 @@ int main(int argc, char **argv)
 
     mrb_parser_free(p);
 
-    SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_Surface *screen = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE);
+    api_register(mrb);
 
-    lineColor(screen, 0, 0, 640, 480, 0xFFFFFFFF);
-    SDL_Flip(screen);
-    SDL_Delay(100);
+    SDL_Init(SDL_INIT_EVERYTHING);
+    screen = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE);
 
     mrb_run(mrb, mrb_proc_new(mrb, mrb->irep[n]), mrb_top_self(mrb));
     if (mrb->exc) {
         mrb_p(mrb, mrb_obj_value(mrb->exc));
     }
 
+    SDL_Delay(1000);
+
     return 0;
+}
+
+static mrb_value api_line(mrb_state *mrb, mrb_value self)
+{
+    mrb_int x1, y1, x2, y2;
+    mrb_get_args(mrb, "iiii", &x1, &y1, &x2, &y2);
+    lineColor(screen, x1, y1, x2, y2, 0xFFFFFFFF);
+    SDL_Flip(screen);
+    SDL_Delay(100);
+    return mrb_nil_value();
+}
+
+static void api_register(mrb_state *mrb)
+{
+  mrb_define_method(mrb, mrb->kernel_module, "line", api_line, ARGS_REQ(4));
 }
