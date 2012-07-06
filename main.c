@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <stdint.h>
 #include <SDL.h>
 #include <SDL_gfxPrimitives.h>
 
@@ -13,6 +14,7 @@
 
 static void api_register(mrb_state *mrb);
 static SDL_Surface *screen;
+static uint32_t color;
 
 int main(int argc, char **argv)
 {
@@ -51,6 +53,7 @@ int main(int argc, char **argv)
 
     SDL_Init(SDL_INIT_EVERYTHING);
     screen = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE);
+    color = 0xFFFFFFFF;
 
     mrb_run(mrb, mrb_proc_new(mrb, mrb->irep[n]), mrb_top_self(mrb));
     if (mrb->exc) {
@@ -62,11 +65,19 @@ int main(int argc, char **argv)
     return 0;
 }
 
+static mrb_value api_color(mrb_state *mrb, mrb_value self)
+{
+    mrb_int r, g, b, a;
+    mrb_get_args(mrb, "iiii", &r, &g, &b, &a);
+    color = (r<<24) | (g<<16) | (b<<8) | a;
+    return mrb_nil_value();
+}
+
 static mrb_value api_line(mrb_state *mrb, mrb_value self)
 {
     mrb_int x1, y1, x2, y2;
     mrb_get_args(mrb, "iiii", &x1, &y1, &x2, &y2);
-    lineColor(screen, x1, y1, x2, y2, 0xFFFFFFFF);
+    lineColor(screen, x1, y1, x2, y2, color);
     SDL_Flip(screen);
     SDL_Delay(100);
     return mrb_nil_value();
@@ -74,5 +85,6 @@ static mrb_value api_line(mrb_state *mrb, mrb_value self)
 
 static void api_register(mrb_state *mrb)
 {
+  mrb_define_method(mrb, mrb->kernel_module, "color", api_color, ARGS_REQ(4));
   mrb_define_method(mrb, mrb->kernel_module, "line", api_line, ARGS_REQ(4));
 }
