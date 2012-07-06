@@ -1,9 +1,11 @@
 MRUBY := mruby
 BIN := foo
 
-CFLAGS := -I $(MRUBY)/include -Wall
-LDFLAGS := -static
-LDLIBS := -L $(MRUBY)/lib -l mruby -lm
+PKGS := sdl SDL_gfx
+
+CFLAGS := -I $(MRUBY)/include -Wall $(shell pkg-config --cflags $(PKGS))
+LDFLAGS :=
+LDLIBS := -L $(MRUBY)/lib -l mruby $(shell pkg-config --libs $(PKGS)) -lm
 
 all: $(BIN)
 

@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <SDL.h>
+#include <SDL_gfxPrimitives.h>
 
 int
 main(int argc, char **argv)
@@ -41,6 +43,13 @@ main(int argc, char **argv)
   }
 
   mrb_parser_free(p);
+
+	SDL_Init(SDL_INIT_EVERYTHING);
+	SDL_Surface *screen = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE);
+
+	lineColor(screen, 0, 0, 640, 480, 0xFFFFFFFF);
+	SDL_Flip(screen);
+	SDL_Delay(100);
 
   mrb_run(mrb, mrb_proc_new(mrb, mrb->irep[n]), mrb_top_self(mrb));
   if (mrb->exc) {
