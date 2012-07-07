@@ -125,8 +125,17 @@ static mrb_value api_line(mrb_state *mrb, mrb_value self)
 static mrb_value api_box(mrb_state *mrb, mrb_value self)
 {
     mrb_int x1, y1, x2, y2;
-    mrb_get_args(mrb, "iiii", &x1, &y1, &x2, &y2);
-    boxColor(screen, x1, y1, x2, y2, color);
+    mrb_value opts;
+    bool fill = false;
+    int argc = mrb_get_args(mrb, "iiii|o", &x1, &y1, &x2, &y2, &opts);
+    if (argc > 4) {
+        fill = mrb_test(mrb_hash_get(mrb, opts, sym_fill));
+    }
+    if (fill) {
+        boxColor(screen, x1, y1, x2, y2, color);
+    } else {
+        rectangleColor(screen, x1, y1, x2, y2, color);
+    }
     return mrb_nil_value();
 }
 
