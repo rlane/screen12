@@ -15,11 +15,15 @@
 #include "mruby/hash.h"
 
 static mrb_irep *parse_file(mrb_state *mrb, const char *filename);
+static void sym_init(mrb_state *mrb);
 static void api_register(mrb_state *mrb);
 
 static SDL_Surface *screen;
 static uint32_t color;
 static const int screen_width = 640, screen_height = 480, screen_depth = 32;
+
+/* Symbols */
+static mrb_value sym_fill;
 
 int main(int argc, char **argv)
 {
@@ -42,6 +46,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    sym_init(mrb);
     api_register(mrb);
 
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -96,6 +101,11 @@ static mrb_irep *parse_file(mrb_state *mrb, const char *filename)
     return mrb->irep[n];
 }
 
+static void sym_init(mrb_state *mrb)
+{
+    sym_fill = mrb_symbol_value(mrb_intern(mrb, "fill"));
+}
+
 static mrb_value api_color(mrb_state *mrb, mrb_value self)
 {
     mrb_int r, g, b, a;
@@ -119,8 +129,6 @@ static mrb_value api_circle(mrb_state *mrb, mrb_value self)
     bool fill = false;
     int argc = mrb_get_args(mrb, "iii|o", &x, &y, &r, &opts);
     if (argc > 3) {
-        // TODO intern these once
-        mrb_value sym_fill = mrb_symbol_value(mrb_intern(mrb, "fill"));
         fill = mrb_test(mrb_hash_get(mrb, opts, sym_fill));
     }
     if (fill) {
