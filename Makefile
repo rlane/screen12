@@ -9,8 +9,8 @@ LDLIBS := -L $(MRUBY)/lib -l mruby $(shell pkg-config --libs $(PKGS)) -lm
 
 all: $(BIN)
 
-$(BIN): main.o
-	$(CC) $(LDFLAGS) -o $@ $< $(LDLIBS)
+$(BIN): main.o api.o
+	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 main.o: main.c | $(MRUBY)/lib/libmruby.a
 
