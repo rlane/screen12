@@ -17,6 +17,7 @@ static void api_register(mrb_state *mrb);
 
 static SDL_Surface *screen;
 static uint32_t color;
+static const int screen_width = 640, screen_height = 480, screen_depth = 32;
 
 int main(int argc, char **argv)
 {
@@ -42,8 +43,11 @@ int main(int argc, char **argv)
     api_register(mrb);
 
     SDL_Init(SDL_INIT_EVERYTHING);
-    screen = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE);
+    screen = SDL_SetVideoMode(screen_width, screen_height, screen_depth, SDL_SWSURFACE);
     color = 0xFFFFFFFF;
+
+    mrb_define_const(mrb, mrb->kernel_module, "SCREEN_WIDTH", mrb_fixnum_value(screen_width));
+    mrb_define_const(mrb, mrb->kernel_module, "SCREEN_HEIGHT", mrb_fixnum_value(screen_height));
 
     mrb_run(mrb, mrb_proc_new(mrb, lib_irep), mrb_top_self(mrb));
     if (mrb->exc) {
