@@ -7,6 +7,8 @@ prng = PRNG.new
   end
   color(255, 0, 0, 255)
   circle(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, i*5)
+  color(255, 0, 100, 255)
+  circle(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, i*3, fill: true)
   flip
   delay(30)
 end

@@ -2,6 +2,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <SDL.h>
 #include <SDL_gfxPrimitives.h>
 
@@ -11,6 +12,7 @@
 #include "mruby/string.h"
 #include "mruby/compile.h"
 #include "mruby/dump.h"
+#include "mruby/hash.h"
 
 static mrb_irep *parse_file(mrb_state *mrb, const char *filename);
 static void api_register(mrb_state *mrb);
@@ -113,8 +115,19 @@ static mrb_value api_line(mrb_state *mrb, mrb_value self)
 static mrb_value api_circle(mrb_state *mrb, mrb_value self)
 {
     mrb_int x, y, r;
-    mrb_get_args(mrb, "iii", &x, &y, &r);
-    circleColor(screen, x, y, r, color);
+    mrb_value opts;
+    bool fill = false;
+    int argc = mrb_get_args(mrb, "iii|o", &x, &y, &r, &opts);
+    if (argc > 3) {
+        // TODO intern these once
+        mrb_value sym_fill = mrb_symbol_value(mrb_intern(mrb, "fill"));
+        fill = mrb_test(mrb_hash_get(mrb, opts, sym_fill));
+    }
+    if (fill) {
+        filledCircleColor(screen, x, y, r, color);
+    } else {
+        circleColor(screen, x, y, r, color);
+    }
     return mrb_nil_value();
 }
 
@@ -136,7 +149,7 @@ static void api_register(mrb_state *mrb)
 {
     mrb_define_method(mrb, mrb->kernel_module, "color", api_color, ARGS_REQ(4));
     mrb_define_method(mrb, mrb->kernel_module, "line", api_line, ARGS_REQ(4));
-    mrb_define_method(mrb, mrb->kernel_module, "circle", api_circle, ARGS_REQ(3));
+    mrb_define_method(mrb, mrb->kernel_module, "circle", api_circle, ARGS_REQ(3) | ARGS_OPT(1));
     mrb_define_method(mrb, mrb->kernel_module, "delay", api_delay, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "flip", api_flip, ARGS_NONE());
 }
