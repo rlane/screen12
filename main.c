@@ -167,15 +167,27 @@ static mrb_value api_circle(mrb_state *mrb, mrb_value self)
 {
     mrb_int x, y, r;
     mrb_value opts;
-    bool fill = false;
+    bool fill = false, antialiased = false;
     int argc = mrb_get_args(mrb, "iii|o", &x, &y, &r, &opts);
     if (argc > 3) {
         fill = mrb_test(mrb_hash_get(mrb, opts, sym_fill));
+        antialiased = mrb_test(mrb_hash_get(mrb, opts, sym_aa));
     }
     if (fill) {
-        filledCircleColor(screen, x, y, r, color);
+        if (antialiased) {
+            // HACK SDL_gfx doesn't have an aafilledCircleColor function
+            // Breaks if color is translucent.
+            aacircleColor(screen, x, y, r, color);
+            filledCircleColor(screen, x, y, r, color);
+        } else {
+            filledCircleColor(screen, x, y, r, color);
+        }
     } else {
-        circleColor(screen, x, y, r, color);
+        if (antialiased) {
+            aacircleColor(screen, x, y, r, color);
+        } else {
+            circleColor(screen, x, y, r, color);
+        }
     }
     return mrb_nil_value();
 }
