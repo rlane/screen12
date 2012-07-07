@@ -12,6 +12,8 @@ prng = PRNG.new
   color(255, 255, 0, 100)
   box(i*10, 40, i*10 + 50, 90)
   box(i*10, 100, i*10 + 50, 150, fill: true)
+  box(i*10, 160, i*10 + 50, 210, fill: true, round: 10)
+  box(i*10, 220, i*10 + 50, 270, round: 10)
   flip
   delay(30)
 end

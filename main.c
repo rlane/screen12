@@ -24,6 +24,7 @@ static const int screen_width = 640, screen_height = 480, screen_depth = 32;
 
 /* Symbols */
 static mrb_value sym_fill;
+static mrb_value sym_round;
 
 int main(int argc, char **argv)
 {
@@ -104,6 +105,7 @@ static mrb_irep *parse_file(mrb_state *mrb, const char *filename)
 static void sym_init(mrb_state *mrb)
 {
     sym_fill = mrb_symbol_value(mrb_intern(mrb, "fill"));
+    sym_round = mrb_symbol_value(mrb_intern(mrb, "round"));
 }
 
 static mrb_value api_color(mrb_state *mrb, mrb_value self)
@@ -126,15 +128,28 @@ static mrb_value api_box(mrb_state *mrb, mrb_value self)
 {
     mrb_int x1, y1, x2, y2;
     mrb_value opts;
-    bool fill = false;
+    int r = 0;
+    bool fill = false, rounded = false;
     int argc = mrb_get_args(mrb, "iiii|o", &x1, &y1, &x2, &y2, &opts);
     if (argc > 4) {
         fill = mrb_test(mrb_hash_get(mrb, opts, sym_fill));
+        rounded = mrb_test(mrb_hash_get(mrb, opts, sym_round));
+    }
+    if (rounded) {
+      r = mrb_fixnum(mrb_hash_get(mrb, opts, sym_round)); // TODO check
     }
     if (fill) {
-        boxColor(screen, x1, y1, x2, y2, color);
+        if (rounded) {
+            roundedBoxColor(screen, x1, y1, x2, y2, r, color);
+        } else {
+            boxColor(screen, x1, y1, x2, y2, color);
+        }
     } else {
-        rectangleColor(screen, x1, y1, x2, y2, color);
+        if (rounded) {
+            roundedRectangleColor(screen, x1, y1, x2, y2, r, color);
+        } else {
+            rectangleColor(screen, x1, y1, x2, y2, color);
+        }
     }
     return mrb_nil_value();
 }
