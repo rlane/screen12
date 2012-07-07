@@ -57,8 +57,6 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    SDL_Delay(1000);
-
     return 0;
 }
 
@@ -105,13 +103,27 @@ static mrb_value api_line(mrb_state *mrb, mrb_value self)
     mrb_int x1, y1, x2, y2;
     mrb_get_args(mrb, "iiii", &x1, &y1, &x2, &y2);
     lineColor(screen, x1, y1, x2, y2, color);
+    return mrb_nil_value();
+}
+
+static mrb_value api_flip(mrb_state *mrb, mrb_value self)
+{
     SDL_Flip(screen);
-    SDL_Delay(100);
+    return mrb_nil_value();
+}
+
+static mrb_value api_delay(mrb_state *mrb, mrb_value self)
+{
+    mrb_int ms;
+    mrb_get_args(mrb, "i", &ms);
+    SDL_Delay(ms);
     return mrb_nil_value();
 }
 
 static void api_register(mrb_state *mrb)
 {
-  mrb_define_method(mrb, mrb->kernel_module, "color", api_color, ARGS_REQ(4));
-  mrb_define_method(mrb, mrb->kernel_module, "line", api_line, ARGS_REQ(4));
+    mrb_define_method(mrb, mrb->kernel_module, "color", api_color, ARGS_REQ(4));
+    mrb_define_method(mrb, mrb->kernel_module, "line", api_line, ARGS_REQ(4));
+    mrb_define_method(mrb, mrb->kernel_module, "delay", api_delay, ARGS_REQ(1));
+    mrb_define_method(mrb, mrb->kernel_module, "flip", api_flip, ARGS_NONE());
 }
