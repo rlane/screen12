@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <signal.h>
 #include <SDL.h>
 #include <SDL_gfxPrimitives.h>
 
@@ -45,6 +46,8 @@ int main(int argc, char **argv)
     }
 
     SDL_Init(SDL_INIT_EVERYTHING);
+    signal(SIGINT, SIG_DFL);
+
     screen = SDL_SetVideoMode(screen_width, screen_height, screen_depth, SDL_SWSURFACE);
 
     api_init(mrb);
