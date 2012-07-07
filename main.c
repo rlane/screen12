@@ -176,9 +176,19 @@ static mrb_value api_circle(mrb_state *mrb, mrb_value self)
     if (fill) {
         if (antialiased) {
             // HACK SDL_gfx doesn't have an aafilledCircleColor function
-            // Breaks if color is translucent.
-            aacircleColor(screen, x, y, r, color);
-            filledCircleColor(screen, x, y, r, color);
+            int alpha = color & 0xFF;
+            if (alpha != 0xFF) {
+                // Jitter antialiasing. TODO this is slow and low quality.
+                const int num_passes = 4;
+                int pass_color = (color & ~0xFF) | (alpha/num_passes);
+                filledCircleColor(screen, x+1, y+1, r, pass_color);
+                filledCircleColor(screen, x+1, y, r, pass_color);
+                filledCircleColor(screen, x, y+1, r, pass_color);
+                filledCircleColor(screen, x, y, r, pass_color);
+            } else {
+                filledCircleColor(screen, x, y, r, color);
+                aacircleColor(screen, x, y, r, color);
+            }
         } else {
             filledCircleColor(screen, x, y, r, color);
         }
