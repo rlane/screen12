@@ -9,6 +9,8 @@ prng = PRNG.new
   circle(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, i*5)
   color(255, 0, 100, 255)
   circle(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, i*3, fill: true)
+  color(255, 255, 0, 100)
+  box(i*10, 40, i*10 + 50, 90)
   flip
   delay(30)
 end

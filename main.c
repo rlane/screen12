@@ -122,6 +122,14 @@ static mrb_value api_line(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
+static mrb_value api_box(mrb_state *mrb, mrb_value self)
+{
+    mrb_int x1, y1, x2, y2;
+    mrb_get_args(mrb, "iiii", &x1, &y1, &x2, &y2);
+    boxColor(screen, x1, y1, x2, y2, color);
+    return mrb_nil_value();
+}
+
 static mrb_value api_circle(mrb_state *mrb, mrb_value self)
 {
     mrb_int x, y, r;
@@ -157,6 +165,7 @@ static void api_register(mrb_state *mrb)
 {
     mrb_define_method(mrb, mrb->kernel_module, "color", api_color, ARGS_REQ(4));
     mrb_define_method(mrb, mrb->kernel_module, "line", api_line, ARGS_REQ(4));
+    mrb_define_method(mrb, mrb->kernel_module, "box", api_box, ARGS_REQ(4));
     mrb_define_method(mrb, mrb->kernel_module, "circle", api_circle, ARGS_REQ(3) | ARGS_OPT(1));
     mrb_define_method(mrb, mrb->kernel_module, "delay", api_delay, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "flip", api_flip, ARGS_NONE());
