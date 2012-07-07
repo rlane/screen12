@@ -110,6 +110,14 @@ static mrb_value api_line(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
+static mrb_value api_circle(mrb_state *mrb, mrb_value self)
+{
+    mrb_int x, y, r;
+    mrb_get_args(mrb, "iii", &x, &y, &r);
+    circleColor(screen, x, y, r, color);
+    return mrb_nil_value();
+}
+
 static mrb_value api_flip(mrb_state *mrb, mrb_value self)
 {
     SDL_Flip(screen);
@@ -128,6 +136,7 @@ static void api_register(mrb_state *mrb)
 {
     mrb_define_method(mrb, mrb->kernel_module, "color", api_color, ARGS_REQ(4));
     mrb_define_method(mrb, mrb->kernel_module, "line", api_line, ARGS_REQ(4));
+    mrb_define_method(mrb, mrb->kernel_module, "circle", api_circle, ARGS_REQ(3));
     mrb_define_method(mrb, mrb->kernel_module, "delay", api_delay, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "flip", api_flip, ARGS_NONE());
 }
