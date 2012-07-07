@@ -23,8 +23,7 @@ static uint32_t color;
 static const int screen_width = 640, screen_height = 480, screen_depth = 32;
 
 /* Symbols */
-static mrb_value sym_fill;
-static mrb_value sym_round;
+static mrb_value sym_fill, sym_round, sym_aa;
 
 int main(int argc, char **argv)
 {
@@ -106,6 +105,7 @@ static void sym_init(mrb_state *mrb)
 {
     sym_fill = mrb_symbol_value(mrb_intern(mrb, "fill"));
     sym_round = mrb_symbol_value(mrb_intern(mrb, "round"));
+    sym_aa = mrb_symbol_value(mrb_intern(mrb, "aa"));
 }
 
 static mrb_value api_color(mrb_state *mrb, mrb_value self)
@@ -119,8 +119,17 @@ static mrb_value api_color(mrb_state *mrb, mrb_value self)
 static mrb_value api_line(mrb_state *mrb, mrb_value self)
 {
     mrb_int x1, y1, x2, y2;
-    mrb_get_args(mrb, "iiii", &x1, &y1, &x2, &y2);
-    lineColor(screen, x1, y1, x2, y2, color);
+    bool antialiased = false;
+    mrb_value opts;
+    int argc = mrb_get_args(mrb, "iiii|o", &x1, &y1, &x2, &y2, &opts);
+    if (argc > 4) {
+        antialiased = mrb_test(mrb_hash_get(mrb, opts, sym_aa));
+    }
+    if (antialiased) {
+        aalineColor(screen, x1, y1, x2, y2, color);
+    } else {
+        lineColor(screen, x1, y1, x2, y2, color);
+    }
     return mrb_nil_value();
 }
 
