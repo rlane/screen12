@@ -4,59 +4,56 @@
 MAIN_ACC = 1.0
 ANGULAR_ACC = -0.01
 
-# player variables
-$x = SCREEN_WIDTH/2.0
-$y = SCREEN_HEIGHT/2.0
-$angle = 0.0
-$vx = 0.0
-$vy = 0.0
-$angular_velocity = 0.0
-$main_acc = 0.0
-$angular_acc = 0.0
+# create the player
+$player = {
+  x: SCREEN_WIDTH/2.0, y: SCREEN_HEIGHT/2.0, angle: 0.0,
+  vx: 0.0, vy: 0.0, angular_velocity: 0.0,
+  main_acc: 0.0, angular_acc: 0.0
+}
 
 def handle_input
-  $main_acc = 0.0
-  $angular_acc = 0.0
+  $player[:main_acc] = 0.0
+  $player[:angular_acc] = 0.0
 
   if keys.member?('up')
-    $main_acc += MAIN_ACC
+    $player[:main_acc] += MAIN_ACC
   end
 
   if keys.member?('down')
-    $main_acc -= MAIN_ACC
+    $player[:main_acc] -= MAIN_ACC
   end
 
   if keys.member?('left')
-    $angular_acc += ANGULAR_ACC
+    $player[:angular_acc] += ANGULAR_ACC
   end
 
   if keys.member?('right')
-    $angular_acc -= ANGULAR_ACC
+    $player[:angular_acc] -= ANGULAR_ACC
   end
 end
 
 def move_player
-  $vx += $main_acc * Math.cos($angle)
-  $vy += $main_acc * Math.sin($angle)
-  $angular_velocity += $angular_acc
-  $angle += $angular_velocity
-  $x += $vx
-  $y += $vy
+  $player[:vx] += $player[:main_acc] * Math.cos($player[:angle])
+  $player[:vy] += $player[:main_acc] * Math.sin($player[:angle])
+  $player[:angular_velocity] += $player[:angular_acc]
+  $player[:angle] += $player[:angular_velocity]
+  $player[:x] += $player[:vx]
+  $player[:y] += $player[:vy]
 
-  if $x > SCREEN_WIDTH
-    $x -= SCREEN_WIDTH
+  if $player[:x] > SCREEN_WIDTH
+    $player[:x] -= SCREEN_WIDTH
   end
 
-  if $x < 0
-    $x += SCREEN_WIDTH
+  if $player[:x] < 0
+    $player[:x] += SCREEN_WIDTH
   end
 
-  if $y > SCREEN_HEIGHT
-    $y -= SCREEN_HEIGHT
+  if $player[:y] > SCREEN_HEIGHT
+    $player[:y] -= SCREEN_HEIGHT
   end
 
-  if $y < 0
-    $y += SCREEN_HEIGHT
+  if $player[:y] < 0
+    $player[:y] += SCREEN_HEIGHT
   end
 end
 
@@ -69,12 +66,12 @@ def draw_player
   color(255, 255, 255, 100)
   r = 20
   da = 2.4
-  x1 = $x + r*Math.cos($angle)
-  y1 = $y + r*Math.sin($angle)
-  x2 = $x + r*Math.cos($angle+da)
-  y2 = $y + r*Math.sin($angle+da)
-  x3 = $x + r*Math.cos($angle-da)
-  y3 = $y + r*Math.sin($angle-da)
+  x1 = $player[:x] + r*Math.cos($player[:angle])
+  y1 = $player[:y] + r*Math.sin($player[:angle])
+  x2 = $player[:x] + r*Math.cos($player[:angle]+da)
+  y2 = $player[:y] + r*Math.sin($player[:angle]+da)
+  x3 = $player[:x] + r*Math.cos($player[:angle]-da)
+  y3 = $player[:y] + r*Math.sin($player[:angle]-da)
   line(x1, y1, x2, y2, aa: true)
   line(x2, y2, x3, y3, aa: true)
   line(x3, y3, x1, y1, aa: true)

@@ -7,4 +7,3 @@ class PRNG
     @state = (16807*@state) % 2147483647
   end
 end
-
