@@ -48,46 +48,14 @@ def move_player
   $player[:vy] += $player[:main_acc] * Math.sin($player[:angle])
   $player[:angular_velocity] += $player[:angular_acc]
   $player[:angle] += $player[:angular_velocity]
-  $player[:x] += $player[:vx]
-  $player[:y] += $player[:vy]
-
-  if $player[:x] > SCREEN_WIDTH
-    $player[:x] -= SCREEN_WIDTH
-  end
-
-  if $player[:x] < 0
-    $player[:x] += SCREEN_WIDTH
-  end
-
-  if $player[:y] > SCREEN_HEIGHT
-    $player[:y] -= SCREEN_HEIGHT
-  end
-
-  if $player[:y] < 0
-    $player[:y] += SCREEN_HEIGHT
-  end
+  $player[:x] = ($player[:x] + $player[:vx]) % SCREEN_WIDTH
+  $player[:y] = ($player[:y] + $player[:vy]) % SCREEN_HEIGHT
 end
 
 def move_bullets
   $bullets.each do |bullet|
-    bullet[:x] += bullet[:vx]
-    bullet[:y] += bullet[:vy]
-
-    if bullet[:x] > SCREEN_WIDTH
-      bullet[:x] -= SCREEN_WIDTH
-    end
-
-    if bullet[:x] < 0
-      bullet[:x] += SCREEN_WIDTH
-    end
-
-    if bullet[:y] > SCREEN_HEIGHT
-      bullet[:y] -= SCREEN_HEIGHT
-    end
-
-    if bullet[:y] < 0
-      bullet[:y] += SCREEN_HEIGHT
-    end
+    bullet[:x] = (bullet[:x] + bullet[:vx]) % SCREEN_WIDTH
+    bullet[:y] = (bullet[:y] + bullet[:vy]) % SCREEN_HEIGHT
   end
 end
 
