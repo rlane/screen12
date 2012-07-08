@@ -22,7 +22,7 @@ static mrb_irep *parse_file(mrb_state *mrb, const char *filename);
 
 SDL_Surface *screen;
 uint32_t color = 0xFFFFFFFF;
-int screen_width = 640, screen_height = 480;
+int screen_width = 800, screen_height = 600;
 
 int main(int argc, char **argv)
 {
