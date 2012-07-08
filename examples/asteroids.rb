@@ -6,8 +6,7 @@ ANGULAR_ACC = -0.005
 BULLET_SPEED = 5.0
 BULLET_LIFETIME = 60
 ASTEROID_MAX_SPEED = 0.9
-ASTEROID_MIN_RADIUS = 10
-ASTEROID_MAX_RADIUS = 60
+ASTEROID_RADIUS = 20
 
 # player ship polygon
 PLAYER_COORDS = [15, 0, # front
@@ -91,13 +90,30 @@ def move_bullets
   end
 
   # Clean up dead bullets
-  $bullets = $bullets.reject { |bullet| bullet[:ttl] == 0 }
+  $bullets = $bullets.reject { |bullet| bullet[:ttl] <= 0 }
 end
 
 def move_asteroids
   $asteroids.each do |asteroid|
     asteroid[:x] = (asteroid[:x] + asteroid[:vx]) % SCREEN_WIDTH
     asteroid[:y] = (asteroid[:y] + asteroid[:vy]) % SCREEN_HEIGHT
+  end
+end
+
+def collide
+  $asteroids.each do |asteroid|
+    $bullets.each do |bullet|
+      dist = Math.sqrt((asteroid[:x] - bullet[:x])**2 + (asteroid[:y] - bullet[:y])**2)
+      if dist < ASTEROID_RADIUS
+        bullet[:ttl] = 0
+        $asteroids.delete asteroid
+        break
+      end
+    end
+  end
+  
+  if $asteroids.empty?
+    create_asteroids
   end
 end
 
@@ -134,6 +150,7 @@ while true
   move_player
   move_bullets
   move_asteroids
+  collide
   clear_screen
   draw_player
   draw_bullets
