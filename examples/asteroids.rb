@@ -1,8 +1,8 @@
 # Incomplete asteroids clone
 
 # constants
-MAIN_ACC = 1.0
-ANGULAR_ACC = -0.01
+MAIN_ACC = 0.5
+ANGULAR_ACC = -0.005
 
 # create the player
 $player = {
@@ -78,5 +78,5 @@ while true
   move_player
   clear_screen
   draw_player
-  delay 30
+  delay 15
 end
