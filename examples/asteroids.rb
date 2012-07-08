@@ -33,6 +33,8 @@ $player = {
 $bullets = []
 $asteroids = []
 
+$score = 0
+
 def create_asteroids
   3.times do
     asteroid = {
@@ -107,6 +109,7 @@ def collide
       if dist < ASTEROID_RADIUS
         bullet[:ttl] = 0
         $asteroids.delete asteroid
+        $score += 100
         break
       end
     end
@@ -120,6 +123,11 @@ end
 def clear_screen
   color(0, 0, 0, 255)
   box(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, fill: true)
+end
+
+def draw_score
+  color(255, 255, 255, 255)
+  text(SCREEN_WIDTH/2 - 10*8/2, 20, "score: #{$score}")
 end
 
 def draw_player
@@ -152,6 +160,7 @@ while true
   move_asteroids
   collide
   clear_screen
+  draw_score
   draw_player
   draw_bullets
   draw_asteroids

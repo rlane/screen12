@@ -247,6 +247,15 @@ static mrb_value api_polygon(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
+static mrb_value api_text(mrb_state *mrb, mrb_value self)
+{
+    int x, y;
+    mrb_value str;
+    mrb_get_args(mrb, "iio", &x, &y, &str);
+    stringColor(screen, x, y, mrb_string_value_cstr(mrb, &str), color);
+    return mrb_nil_value();
+}
+
 static mrb_value api_flip(mrb_state *mrb, mrb_value self)
 {
     SDL_Flip(screen);
@@ -287,6 +296,7 @@ void api_init(mrb_state *mrb)
     mrb_define_method(mrb, mrb->kernel_module, "box", api_box, ARGS_REQ(4));
     mrb_define_method(mrb, mrb->kernel_module, "circle", api_circle, ARGS_REQ(3) | ARGS_OPT(1));
     mrb_define_method(mrb, mrb->kernel_module, "polygon", api_polygon, ARGS_REQ(1));
+    mrb_define_method(mrb, mrb->kernel_module, "text", api_text, ARGS_REQ(3));
     mrb_define_method(mrb, mrb->kernel_module, "delay", api_delay, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "flip", api_flip, ARGS_NONE());
     mrb_define_method(mrb, mrb->kernel_module, "keys", api_keys, ARGS_NONE());
