@@ -14,6 +14,16 @@ PLAYER_COORDS = [15, 0, # front
                  -5, 7, # back right
                  -5, -7] # back left
 
+# asteroid polygon
+ASTEROID_COORDS = [30, 0, # middle right
+                   25, 15, # top right
+                   5, 20, # top middle
+                   -10, 15, # top left
+                   -17, 5, # middle left
+                   -15, -10, # bottom left
+                   7, -17] # bottom middle
+                   
+
 # create the player
 $player = {
   x: SCREEN_WIDTH/2.0, y: SCREEN_HEIGHT/2.0, angle: 0.0,
@@ -30,7 +40,6 @@ def create_asteroids
       x: random(0, SCREEN_HEIGHT), y: random(0, SCREEN_HEIGHT),
       vx: random(-ASTEROID_MAX_SPEED, ASTEROID_MAX_SPEED),
       vy: random(-ASTEROID_MAX_SPEED, ASTEROID_MAX_SPEED),
-      r: random(ASTEROID_MIN_RADIUS, ASTEROID_MAX_RADIUS)
     }
     $asteroids.push(asteroid)
   end
@@ -114,7 +123,8 @@ end
 def draw_asteroids
   color(255, 255, 255, 100)
   $asteroids.each do |asteroid|
-    circle(asteroid[:x], asteroid[:y], asteroid[:r], aa: true)
+    polygon(ASTEROID_COORDS, aa: true,
+            position: [asteroid[:x], asteroid[:y]])
   end
 end
 
