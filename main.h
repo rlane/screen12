@@ -6,6 +6,6 @@
 
 extern SDL_Surface *screen;
 extern uint32_t color;
-extern int screen_width, screen_height, screen_depth;
+extern int screen_width, screen_height;
 
 #endif
