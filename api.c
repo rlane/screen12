@@ -18,7 +18,7 @@
 #include "api.h"
 
 /* Symbols */
-static mrb_value sym_fill, sym_round, sym_aa, sym_position;
+static mrb_value sym_fill, sym_round, sym_aa, sym_position, sym_rotation;
 
 static void sym_init(mrb_state *mrb)
 {
@@ -26,6 +26,7 @@ static void sym_init(mrb_state *mrb)
     sym_round = mrb_symbol_value(mrb_intern(mrb, "round"));
     sym_aa = mrb_symbol_value(mrb_intern(mrb, "aa"));
     sym_position = mrb_symbol_value(mrb_intern(mrb, "position"));
+    sym_rotation = mrb_symbol_value(mrb_intern(mrb, "rotation"));
 }
 
 
@@ -184,14 +185,16 @@ static mrb_value api_circle(mrb_state *mrb, mrb_value self)
 
 static mrb_value api_polygon(mrb_state *mrb, mrb_value self)
 {
-    mrb_value coords_arg, position_arg, opts;
-    bool fill = false, antialiased = false, translated = false;
+    mrb_value coords_arg, position_arg, rotation_arg, opts;
+    bool fill = false, antialiased = false, translated = false, rotated = false;
     int argc = mrb_get_args(mrb, "o|o", &coords_arg, &opts);
     if (argc > 1) {
         fill = mrb_test(mrb_hash_get(mrb, opts, sym_fill));
         antialiased = mrb_test(mrb_hash_get(mrb, opts, sym_aa));
         position_arg = mrb_hash_get(mrb, opts, sym_position);
         translated = mrb_test(position_arg);
+        rotation_arg = mrb_hash_get(mrb, opts, sym_rotation);
+        rotated = mrb_test(rotation_arg);
     }
 
     int tx = 0, ty = 0;
@@ -208,6 +211,12 @@ static mrb_value api_polygon(mrb_state *mrb, mrb_value self)
         ty = mrb_fixnum(yo);
     }
 
+    double rotation = 0.0;
+    if (rotated) {
+        mrb_check_type(mrb, rotation_arg, MRB_TT_FLOAT);
+        rotation = mrb_float(rotation_arg);
+    }
+
     mrb_value coords = mrb_check_array_type(mrb, coords_arg);
     int n = RARRAY_LEN(coords) / 2;
     if (n < 3 || n * 2 != RARRAY_LEN(coords) || n > 1024) {
@@ -218,13 +227,14 @@ static mrb_value api_polygon(mrb_state *mrb, mrb_value self)
     int16_t *ys = alloca(n * sizeof(*ys));
     int i;
     for (i = 0; i < n; i++) {
+        // TODO do everything in floating point
         mrb_value xo = mrb_check_to_integer(mrb, RARRAY_PTR(coords)[i*2], "to_i");
         mrb_check_type(mrb, xo, MRB_TT_FIXNUM);
         mrb_value yo = mrb_check_to_integer(mrb, RARRAY_PTR(coords)[i*2+1], "to_i");
         mrb_check_type(mrb, yo, MRB_TT_FIXNUM);
         int x = mrb_fixnum(xo), y = mrb_fixnum(yo);
-        xs[i] = tx + x;
-        ys[i] = ty + y;
+        xs[i] = tx + (int)(x*cos(rotation) - y*sin(rotation));
+        ys[i] = ty + (int)(x*sin(rotation) + y*cos(rotation));
     }
 
     if (fill) {
