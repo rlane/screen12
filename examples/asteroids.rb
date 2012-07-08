@@ -5,6 +5,9 @@ MAIN_ACC = 0.5
 ANGULAR_ACC = -0.005
 BULLET_SPEED = 5.0
 BULLET_LIFETIME = 60
+ASTEROID_MAX_SPEED = 0.9
+ASTEROID_MIN_RADIUS = 10
+ASTEROID_MAX_RADIUS = 60
 
 # player ship polygon
 PLAYER_COORDS = [15, 0, # front
@@ -19,6 +22,19 @@ $player = {
 }
 
 $bullets = []
+$asteroids = []
+
+def create_asteroids
+  3.times do
+    asteroid = {
+      x: random(0, SCREEN_HEIGHT), y: random(0, SCREEN_HEIGHT),
+      vx: random(-ASTEROID_MAX_SPEED, ASTEROID_MAX_SPEED),
+      vy: random(-ASTEROID_MAX_SPEED, ASTEROID_MAX_SPEED),
+      r: random(ASTEROID_MIN_RADIUS, ASTEROID_MAX_RADIUS)
+    }
+    $asteroids.push(asteroid)
+  end
+end
 
 def handle_input
   $player[:main_acc] = 0.0
@@ -69,6 +85,13 @@ def move_bullets
   $bullets = $bullets.reject { |bullet| bullet[:ttl] == 0 }
 end
 
+def move_asteroids
+  $asteroids.each do |asteroid|
+    asteroid[:x] = (asteroid[:x] + asteroid[:vx]) % SCREEN_WIDTH
+    asteroid[:y] = (asteroid[:y] + asteroid[:vy]) % SCREEN_HEIGHT
+  end
+end
+
 def clear_screen
   color(0, 0, 0, 255)
   box(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, fill: true)
@@ -88,13 +111,23 @@ def draw_bullets
   end
 end
 
+def draw_asteroids
+  color(255, 255, 255, 100)
+  $asteroids.each do |asteroid|
+    circle(asteroid[:x], asteroid[:y], asteroid[:r], aa: true)
+  end
+end
+
+create_asteroids
 while true
   handle_input
   move_player
   move_bullets
+  move_asteroids
   clear_screen
   draw_player
   draw_bullets
+  draw_asteroids
   flip
   delay 15
 end
