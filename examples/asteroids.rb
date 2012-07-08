@@ -4,6 +4,7 @@
 MAIN_ACC = 0.5
 ANGULAR_ACC = -0.005
 BULLET_SPEED = 5.0
+BULLET_LIFETIME = 60
 
 # create the player
 $player = {
@@ -38,7 +39,7 @@ def handle_input
     angle = $player[:angle]
     bvx = $player[:vx] + BULLET_SPEED * Math.cos(angle)
     bvy = $player[:vy] + BULLET_SPEED * Math.sin(angle)
-    bullet = { x: $player[:x], y: $player[:y], vx: bvx, vy: bvy }
+    bullet = { x: $player[:x], y: $player[:y], vx: bvx, vy: bvy, ttl: BULLET_LIFETIME }
     $bullets.push(bullet)
   end
 end
@@ -56,7 +57,11 @@ def move_bullets
   $bullets.each do |bullet|
     bullet[:x] = (bullet[:x] + bullet[:vx]) % SCREEN_WIDTH
     bullet[:y] = (bullet[:y] + bullet[:vy]) % SCREEN_HEIGHT
+    bullet[:ttl] -= 1
   end
+
+  # Clean up dead bullets
+  $bullets = $bullets.reject { |bullet| bullet[:ttl] == 0 }
 end
 
 def clear_screen
