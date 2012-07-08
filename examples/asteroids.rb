@@ -72,9 +72,7 @@ def draw_player
   y2 = $player[:y] + r*Math.sin($player[:angle]+da)
   x3 = $player[:x] + r*Math.cos($player[:angle]-da)
   y3 = $player[:y] + r*Math.sin($player[:angle]-da)
-  line(x1, y1, x2, y2, aa: true)
-  line(x2, y2, x3, y3, aa: true)
-  line(x3, y3, x1, y1, aa: true)
+  polygon([x1, y1, x2, y2, x3, y3], aa: true)
   flip
 end
 

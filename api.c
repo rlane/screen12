@@ -181,6 +181,48 @@ static mrb_value api_circle(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
+static mrb_value api_polygon(mrb_state *mrb, mrb_value self)
+{
+    mrb_value coords_arg, opts;
+    bool fill = false, antialiased = false;
+    int argc = mrb_get_args(mrb, "o|o", &coords_arg, &opts);
+    if (argc > 1) {
+        fill = mrb_test(mrb_hash_get(mrb, opts, sym_fill));
+        antialiased = mrb_test(mrb_hash_get(mrb, opts, sym_aa));
+    }
+
+    mrb_value coords = mrb_check_array_type(mrb, coords_arg);
+    int n = RARRAY_LEN(coords) / 2;
+    if (n < 3 || n * 2 != RARRAY_LEN(coords) || n > 1024) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid coordinates array");
+    }
+
+    int16_t *xs = alloca(n * sizeof(*xs));
+    int16_t *ys = alloca(n * sizeof(*ys));
+    int i;
+    for (i = 0; i < n; i++) {
+        mrb_value x = mrb_check_to_integer(mrb, RARRAY_PTR(coords)[i*2], "to_i");
+        mrb_check_type(mrb, x, MRB_TT_FIXNUM);
+        mrb_value y = mrb_check_to_integer(mrb, RARRAY_PTR(coords)[i*2+1], "to_i");
+        mrb_check_type(mrb, y, MRB_TT_FIXNUM);
+        xs[i] = mrb_fixnum(x);
+        ys[i] = mrb_fixnum(y);
+    }
+
+    if (fill) {
+        // TODO filled antialiased polygons
+        filledPolygonColor(screen, xs, ys, n, color);
+    } else {
+        if (antialiased) {
+            aapolygonColor(screen, xs, ys, n, color);
+        } else {
+            polygonColor(screen, xs, ys, n, color);
+        }
+    }
+
+    return mrb_nil_value();
+}
+
 static mrb_value api_flip(mrb_state *mrb, mrb_value self)
 {
     SDL_Flip(screen);
@@ -220,6 +262,7 @@ void api_init(mrb_state *mrb)
     mrb_define_method(mrb, mrb->kernel_module, "line", api_line, ARGS_REQ(4));
     mrb_define_method(mrb, mrb->kernel_module, "box", api_box, ARGS_REQ(4));
     mrb_define_method(mrb, mrb->kernel_module, "circle", api_circle, ARGS_REQ(3) | ARGS_OPT(1));
+    mrb_define_method(mrb, mrb->kernel_module, "polygon", api_polygon, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "delay", api_delay, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "flip", api_flip, ARGS_NONE());
     mrb_define_method(mrb, mrb->kernel_module, "keys", api_keys, ARGS_NONE());
