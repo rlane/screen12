@@ -227,14 +227,10 @@ static mrb_value api_polygon(mrb_state *mrb, mrb_value self)
     int16_t *ys = alloca(n * sizeof(*ys));
     int i;
     for (i = 0; i < n; i++) {
-        // TODO do everything in floating point
-        mrb_value xo = mrb_check_to_integer(mrb, RARRAY_PTR(coords)[i*2], "to_i");
-        mrb_check_type(mrb, xo, MRB_TT_FIXNUM);
-        mrb_value yo = mrb_check_to_integer(mrb, RARRAY_PTR(coords)[i*2+1], "to_i");
-        mrb_check_type(mrb, yo, MRB_TT_FIXNUM);
-        int x = mrb_fixnum(xo), y = mrb_fixnum(yo);
-        xs[i] = tx + (int)(x*cos(rotation) - y*sin(rotation));
-        ys[i] = ty + (int)(x*sin(rotation) + y*cos(rotation));
+        mrb_float x = mrb_float(mrb_Float(mrb, RARRAY_PTR(coords)[2*i]));
+        mrb_float y = mrb_float(mrb_Float(mrb, RARRAY_PTR(coords)[2*i+1]));
+        xs[i] = (int)(tx + x*cos(rotation) - y*sin(rotation));
+        ys[i] = (int)(ty + x*sin(rotation) + y*cos(rotation));
     }
 
     if (fill) {
