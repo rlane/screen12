@@ -66,13 +66,14 @@ def draw_player
   color(255, 255, 255, 100)
   r = 20
   da = 2.4
-  x1 = $player[:x] + r*Math.cos($player[:angle])
-  y1 = $player[:y] + r*Math.sin($player[:angle])
-  x2 = $player[:x] + r*Math.cos($player[:angle]+da)
-  y2 = $player[:y] + r*Math.sin($player[:angle]+da)
-  x3 = $player[:x] + r*Math.cos($player[:angle]-da)
-  y3 = $player[:y] + r*Math.sin($player[:angle]-da)
-  polygon([x1, y1, x2, y2, x3, y3], aa: true)
+  x1 = r*Math.cos($player[:angle])
+  y1 = r*Math.sin($player[:angle])
+  x2 = r*Math.cos($player[:angle]+da)
+  y2 = r*Math.sin($player[:angle]+da)
+  x3 = r*Math.cos($player[:angle]-da)
+  y3 = r*Math.sin($player[:angle]-da)
+  polygon([x1, y1, x2, y2, x3, y3], aa: true,
+          position: [$player[:x], $player[:y]])
   flip
 end
 
