@@ -6,6 +6,11 @@ ANGULAR_ACC = -0.005
 BULLET_SPEED = 5.0
 BULLET_LIFETIME = 60
 
+# player ship polygon
+PLAYER_COORDS = [15, 0, # front
+                 -5, 7, # back right
+                 -5, -7] # back left
+
 # create the player
 $player = {
   x: SCREEN_WIDTH/2.0, y: SCREEN_HEIGHT/2.0, angle: 0.0,
@@ -71,10 +76,7 @@ end
 
 def draw_player
   color(255, 255, 255, 100)
-  coords = [15, 0,
-            -5, 7,
-            -5, -7]
-  polygon(coords, aa: true,
+  polygon(PLAYER_COORDS, aa: true,
           position: [$player[:x], $player[:y]],
           rotation: $player[:angle])
 end
