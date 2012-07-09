@@ -18,7 +18,14 @@ You need SDL and SDL_gfx installed.
  - Ubuntu: `sudo apt-get install libsdl1.2-dev libsdl-gfx1.2-dev`
  - Arch Linux: `sudo pacman -Sy sdl sdl_gfx`
 
-Just run "make" in the source directory and you'll get a "screen12" binary.
+To build the project:
+
+```
+git submodule update --init
+make
+```
+
+You'll end up with a screen12 binary in the project's directory.
 
 Usage
 -----
