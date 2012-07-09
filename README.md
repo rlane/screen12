@@ -51,6 +51,9 @@ API
    function should be removed and done implicitly.
  - `pressed_keys = keys`: Get an array with the names of the keys currently
    being pressed.
+ - `x, y = mouse_position`: Get the current mouse position.
+ - `pressed_buttons = mouse_buttons`: Get an array with the mouse buttons
+   currently being pressed. 1 = left, 2 = middle, 3 = right.
  - `SCREEN_WIDTH`, `SCREEN_HEIGHT`: Size of the screen. Always 800x600 to
    ensure games work across all computers.
 
@@ -88,7 +91,6 @@ TODO
  - Framerate display
  - Centered option for text
  - Pixel read API
- - Mouse input
  - Keyboard prompt input
  - Sound
  - Remove need for `display`

@@ -287,6 +287,31 @@ static mrb_value api_keys(mrb_state *mrb, mrb_value self)
     return keys;
 }
 
+static mrb_value api_mouse_position(mrb_state *mrb, mrb_value self)
+{
+    process_events();
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+    mrb_value pos = mrb_ary_new(mrb);
+    mrb_ary_push(mrb, pos, mrb_fixnum_value(x));
+    mrb_ary_push(mrb, pos, mrb_fixnum_value(y));
+    return pos;
+}
+
+static mrb_value api_mouse_buttons(mrb_state *mrb, mrb_value self)
+{
+    process_events();
+    uint8_t state = SDL_GetMouseState(NULL, NULL);
+    mrb_value buttons = mrb_ary_new(mrb);
+    int i;
+    for (i = 1; i <= 3; i++) {
+        if (state & SDL_BUTTON(i)) {
+            mrb_ary_push(mrb, buttons, mrb_fixnum_value(i));
+        }
+    }
+    return buttons;
+}
+
 void api_init(mrb_state *mrb)
 {
     sym_init(mrb);
@@ -302,6 +327,8 @@ void api_init(mrb_state *mrb)
     mrb_define_method(mrb, mrb->kernel_module, "delay", api_delay, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "display", api_display, ARGS_NONE());
     mrb_define_method(mrb, mrb->kernel_module, "keys", api_keys, ARGS_NONE());
+    mrb_define_method(mrb, mrb->kernel_module, "mouse_position", api_mouse_position, ARGS_NONE());
+    mrb_define_method(mrb, mrb->kernel_module, "mouse_buttons", api_mouse_buttons, ARGS_NONE());
 
     mrb_define_const(mrb, mrb->kernel_module, "SCREEN_WIDTH", mrb_fixnum_value(screen_width));
     mrb_define_const(mrb, mrb->kernel_module, "SCREEN_HEIGHT", mrb_fixnum_value(screen_height));
