@@ -26,14 +26,19 @@ int screen_width = 800, screen_height = 600;
 
 int main(int argc, char **argv)
 {
+    if (argc != 2) {
+        fprintf(stderr, "usage: %s path/to/program.rb\n", argv[0]);
+        return 1;
+    }
+
+    char *path = argv[1];
+
     mrb_state *mrb = mrb_open();
 
     if (mrb == NULL) {
         fprintf(stderr, "Invalid mrb_state, exiting mruby");
         return EXIT_FAILURE;
     }
-
-    char *path = argv[1];
 
     mrb_irep *lib_irep = parse_file(mrb, "lib.rb");
     if (lib_irep == NULL) {
