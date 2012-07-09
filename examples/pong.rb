@@ -136,6 +136,6 @@ while true
   draw_players
   draw_ball
   draw_scores
-  flip
+  display
   delay(16)
 end

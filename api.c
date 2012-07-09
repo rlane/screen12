@@ -242,7 +242,7 @@ static mrb_value api_text(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
-static mrb_value api_flip(mrb_state *mrb, mrb_value self)
+static mrb_value api_display(mrb_state *mrb, mrb_value self)
 {
     SDL_Flip(screen);
     return mrb_nil_value();
@@ -284,7 +284,7 @@ void api_init(mrb_state *mrb)
     mrb_define_method(mrb, mrb->kernel_module, "polygon", api_polygon, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "text", api_text, ARGS_REQ(3));
     mrb_define_method(mrb, mrb->kernel_module, "delay", api_delay, ARGS_REQ(1));
-    mrb_define_method(mrb, mrb->kernel_module, "flip", api_flip, ARGS_NONE());
+    mrb_define_method(mrb, mrb->kernel_module, "display", api_display, ARGS_NONE());
     mrb_define_method(mrb, mrb->kernel_module, "keys", api_keys, ARGS_NONE());
 
     mrb_define_const(mrb, mrb->kernel_module, "SCREEN_WIDTH", mrb_fixnum_value(screen_width));

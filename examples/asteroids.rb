@@ -165,6 +165,6 @@ while true
   draw_player
   draw_bullets
   draw_asteroids
-  flip
+  display
   delay 15
 end

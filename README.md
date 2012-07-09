@@ -39,7 +39,7 @@ API
    rotation: angle)`: Draw a polygon. The coordinates are given as an array.
  - `text(x, y, string)`: Draw text.
  - `delay(msecs)`: Sleep for the given number of milliseconds.
- - `flip`: Display the results of preceeding drawing commands to the user. This
+ - `display`: Display the results of preceeding drawing commands to the user. This
    function should be removed and done implicitly.
  - `pressed_keys = keys`: Get an array with the names of the keys currently
    being pressed.
@@ -84,7 +84,7 @@ TODO
  - Mouse input
  - Keyboard prompt input
  - Sound
- - Remove need for flip
+ - Remove need for `display`
  - Time API
  - Sprites
  - Draw to sprite
