@@ -4,7 +4,7 @@ BIN := screen12
 PKGS := sdl SDL_gfx
 OBJS := screen12.o api.o
 
-CFLAGS := -I $(MRUBY)/include -Wall -Werror $(shell pkg-config --cflags $(PKGS))
+CFLAGS := -I $(MRUBY)/include -g -Os -Wall -Werror $(shell pkg-config --cflags $(PKGS))
 LDFLAGS :=
 LDLIBS := -L $(MRUBY)/lib -l mruby $(shell pkg-config --libs $(PKGS)) -lm
 
