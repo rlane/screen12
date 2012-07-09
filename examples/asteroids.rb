@@ -150,6 +150,7 @@ end
 
 create_asteroids
 while true
+  start_time = time
   handle_input
   move_player
   move_bullets
@@ -161,5 +162,5 @@ while true
   draw_bullets
   draw_asteroids
   display
-  delay 15
+  delay(15 - (time - start_time))
 end

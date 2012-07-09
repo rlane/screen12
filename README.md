@@ -46,6 +46,7 @@ API
  - `polygon([x1, y1, x2, y2, ...], aa: bool, fill: bool, position: [x,y],
    rotation: angle)`: Draw a polygon. The coordinates are given as an array.
  - `text(x, y, string)`: Draw text.
+ - `msecs = time`: Return the number of milliseconds since the program started.
  - `delay(msecs)`: Sleep for the given number of milliseconds.
  - `display`: Display the results of preceeding drawing commands to the user. This
    function should be removed and done implicitly.
@@ -94,7 +95,6 @@ TODO
  - Keyboard prompt input
  - Sound
  - Remove need for `display`
- - Time API
  - Sprites
  - Draw to sprite
  - Fast assembly language equivalent
