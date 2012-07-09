@@ -33,11 +33,19 @@ TODO
 ----
 
  - More example games
+ - Improve debugging
+ - Framerate display
+ - Point set/get API
  - Mouse input
+ - Keyboard prompt input
  - Sound
  - Remove need for flip
  - Time API
  - Sprites
+ - Draw to sprite
+ - Fast assembly language equivalent
+ - Move Ruby execution into its own thread
+ - Decide between callback or main-loop programming model
  - Decide between keyword arguments or OpenGL-style state
  - Tutorials
  - Native Client port
