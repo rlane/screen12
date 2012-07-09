@@ -121,11 +121,6 @@ def collide
   end
 end
 
-def clear_screen
-  color(0, 0, 0, 255)
-  box(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, fill: true)
-end
-
 def draw_score
   color(255, 255, 255, 255)
   text(SCREEN_WIDTH/2 - 10*8/2, 20, "score: #{$score}")
@@ -160,7 +155,7 @@ while true
   move_bullets
   move_asteroids
   collide
-  clear_screen
+  clear
   draw_score
   draw_player
   draw_bullets

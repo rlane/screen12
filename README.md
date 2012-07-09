@@ -38,7 +38,7 @@ API
 ---
 
  - `color(r, g, b, a)`: Sets the current color.
- - `clear`: Overwrite the whole screen with the current color.
+ - `clear`: Set the whole screen to black.
  - `line(x1, y1, x2, y2, aa: bool)`: Draw a line.
  - `box(x1, y1, x2, y2, fill: bool)`: Draw a rectangle.
  - `circle(x, y, radius, fill: bool, aa: bool)`: Draw a circle.
@@ -85,7 +85,6 @@ TODO
  - More example games
  - Improve debugging
  - Framerate display
- - Clear screen API
  - Centered option for text
  - Point set/get API
  - Mouse input

@@ -103,11 +103,6 @@ def move_ball
   end
 end
 
-def clear_screen
-  color(0, 0, 0, 255)
-  box(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, fill: true)
-end
-
 def draw_players
   [$player1, $player2].each do |player|
     color(100, 100, 200, 255)
@@ -132,7 +127,7 @@ while true
   handle_input
   enforce_boundary
   move_ball
-  clear_screen
+  clear
   draw_players
   draw_ball
   draw_scores

@@ -96,6 +96,12 @@ static mrb_value api_color(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
+static mrb_value api_clear(mrb_state *mrb, mrb_value self)
+{
+    boxColor(screen, 0, 0, screen_width, screen_height, 0xFF);
+    return mrb_nil_value();
+}
+
 static mrb_value api_line(mrb_state *mrb, mrb_value self)
 {
     mrb_int x1, y1, x2, y2;
@@ -278,6 +284,7 @@ void api_init(mrb_state *mrb)
     sym_init(mrb);
 
     mrb_define_method(mrb, mrb->kernel_module, "color", api_color, ARGS_REQ(4));
+    mrb_define_method(mrb, mrb->kernel_module, "clear", api_clear, ARGS_NONE());
     mrb_define_method(mrb, mrb->kernel_module, "line", api_line, ARGS_REQ(4));
     mrb_define_method(mrb, mrb->kernel_module, "box", api_box, ARGS_REQ(4));
     mrb_define_method(mrb, mrb->kernel_module, "circle", api_circle, ARGS_REQ(3) | ARGS_OPT(1));
