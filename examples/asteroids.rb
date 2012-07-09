@@ -136,7 +136,7 @@ end
 def draw_bullets
   color(255, 255, 255, 200)
   $bullets.each do |bullet|
-    line(bullet[:x], bullet[:y], bullet[:x], bullet[:y])
+    point(bullet[:x], bullet[:y])
   end
 end
 

@@ -39,6 +39,7 @@ API
 
  - `color(r, g, b, a)`: Sets the current color.
  - `clear`: Set the whole screen to black.
+ - `point(x, y)`: Draw a single pixel.
  - `line(x1, y1, x2, y2, aa: bool)`: Draw a line.
  - `box(x1, y1, x2, y2, fill: bool)`: Draw a rectangle.
  - `circle(x, y, radius, fill: bool, aa: bool)`: Draw a circle.
@@ -86,7 +87,7 @@ TODO
  - Improve debugging
  - Framerate display
  - Centered option for text
- - Point set/get API
+ - Pixel read API
  - Mouse input
  - Keyboard prompt input
  - Sound
