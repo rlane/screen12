@@ -35,6 +35,8 @@ TODO
  - More example games
  - Improve debugging
  - Framerate display
+ - Clear screen API
+ - Centered option for text
  - Point set/get API
  - Mouse input
  - Keyboard prompt input
