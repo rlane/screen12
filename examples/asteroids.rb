@@ -1,12 +1,13 @@
 # Incomplete asteroids clone
+# Use the arrow keys to move your ship and space to shoot its gun.
 
-# constants
 MAIN_ACC = 0.5
 ANGULAR_ACC = -0.005
 BULLET_SPEED = 5.0
 BULLET_LIFETIME = 60
 ASTEROID_MAX_SPEED = 0.9
 ASTEROID_RADIUS = 20
+NUM_ASTEROIDS = 4
 
 # player ship polygon
 PLAYER_COORDS = [15, 0, # front
@@ -36,7 +37,7 @@ $asteroids = []
 $score = 0
 
 def create_asteroids
-  3.times do
+  NUM_ASTEROIDS.times do
     asteroid = {
       x: random(0, SCREEN_HEIGHT), y: random(0, SCREEN_HEIGHT),
       vx: random(-ASTEROID_MAX_SPEED, ASTEROID_MAX_SPEED),

@@ -46,6 +46,32 @@ API
  - `SCREEN_WIDTH`, `SCREEN_HEIGHT`: Size of the screen. Always 800x600 to
    ensure games work across all computers.
 
+Development
+-----------
+
+If you'd like to contribute to the project please fork rlane/screen12 on GitHub and send me a pull request. Also feel free to add bugs and feature requests to the issue tracker on GitHub.
+
+Example code
+------------
+
+An important (and fun!) part of this project is writing games for new users to play and tinker with. We need to make sure that this code is simple and readable enough that someone with no programming experience can by trial and error make his own small changes. It's a challenge to make games fun and engaging while limiting complexity.
+
+Below are a few recommendations for example code. These won't be enforced strictly. We may decide to group the example code into collections with more or less complexity. Many of these points are entirely at odds with good software engineering practices but serve to limit the number of abstractions the user has to wade through.
+
+ - Avoid classes and use hashes instead.
+ - Avoid indirect control flow. The user should be able to read the code from
+   top to bottom and understand exactly what's going on.
+ - Prefer redundant inline code to small helper methods.
+ - Limit examples to 500 lines of code, excluding whitespace and comments. Less
+   is better.
+ - Prefer procedural programming techniques rather than object-oriented or
+   functional.
+ - Write many comments and use full sentences in simple language.
+ - Put as many interesting tunable values as possible as constants at the top
+   of the program with clear descriptive names.
+ - Organize functions in the order they'll be called during the main loop.
+ - Global variables are allowed and even encouraged.
+
 TODO
 ----
 
