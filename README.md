@@ -10,6 +10,23 @@ What does "Screen12" mean?
 
 `SCREEN 12` was the QBasic command to get a high-resolution (640x480) 16-color display. Screen12 was inspired by my own experience getting hooked by programming with QBasic, as well as the stalled Load81 project by Salvatore Sanfilippo.
 
+Installation
+------------
+
+You need SDL and SDL_gfx installed.
+
+ - Ubuntu: `sudo apt-get install libsdl1.2-dev libsdl-gfx1.2-dev`
+ - Arch Linux: `sudo pacman -Sy sdl sdl_gfx`
+
+Just run "make" in the source directory and you'll get a "screen12" binary.
+
+Usage
+-----
+
+`./screen12 examples/pong.rb`
+
+There are several games available to try in the examples directory.
+
 API
 ---
 
