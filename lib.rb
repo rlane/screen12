@@ -23,12 +23,14 @@ end
 COLORKEYS = {
   "resources/tyrian1.png" => [0xBF, 0xDC, 0xBF],
   "resources/tyrian2.png" => [0xBF, 0xDC, 0xBF],
+  "resources/tyrian3.png" => [0xBF, 0xDC, 0xBF],
 }
 
 IMAGES = {
   # name => [filename, x, y, w, h]
   'tyrian/player' => ["resources/tyrian1.png", 125, 154, 37, 28],
   'tyrian/enemy' => ["resources/tyrian2.png", 30, 2, 17, 25],
+  'tyrian/bullet' => ["resources/tyrian3.png", 112, 42, 3, 11],
 }
 
 IMAGE_CACHE = Hash.new { |h,k| h[k] = load_image(k, *(COLORKEYS[k] || [-1,-1,-1])) }
