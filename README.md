@@ -13,10 +13,10 @@ What does "Screen12" mean?
 Installation
 ------------
 
-You need SDL and SDL_gfx installed.
+You need SDL, SDL_gfx, and SDL_image installed.
 
- - Ubuntu: `sudo apt-get install libsdl1.2-dev libsdl-gfx1.2-dev`
- - Arch Linux: `sudo pacman -Sy sdl sdl_gfx`
+ - Ubuntu: `sudo apt-get install libsdl1.2-dev libsdl-gfx1.2-dev libsdl-image1.2-dev`
+ - Arch Linux: `sudo pacman -Sy sdl sdl_gfx sdl_image`
 
 To build the project:
 

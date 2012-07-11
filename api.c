@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <SDL.h>
 #include <SDL_gfxPrimitives.h>
+#include <SDL_image.h>
 
 #include "mruby.h"
 #include "mruby/proc.h"
@@ -256,6 +257,33 @@ static mrb_value api_text(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
+/*
+ * TODO optimize (cache image, convert to screen format)
+ * TODO provide Ruby wrapper
+ * api_image_int(x, y,
+ *               clip_x, clip_y, clip_width, clip_height,
+ *               colorkey_red, colorkey_green, colorkey_blue,
+ *               image_path)
+ */
+static mrb_value api_image_int(mrb_state *mrb, mrb_value self)
+{
+    int x, y, cx, cy, cw, ch, kr, kg, kb;
+    mrb_value str;
+    mrb_get_args(mrb, "iiiiiiiiio", &x, &y, &cx, &cy, &cw, &ch, &kr, &kg, &kb, &str);
+    const char *path = mrb_string_value_cstr(mrb, &str);
+    SDL_Surface *img = IMG_Load(path);
+    if (img == NULL) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid image path");
+    }
+    Uint32 colorkey = SDL_MapRGB(img->format, kr, kg, kb);
+    SDL_SetColorKey(img, SDL_SRCCOLORKEY, colorkey);
+    SDL_Rect clip = { .x = cx, .y = cy, .w = cw, .h = ch };
+    SDL_Rect offset = { .x = x, .y = y };
+    SDL_BlitSurface(img, &clip, screen, &offset);
+    SDL_FreeSurface(img);
+    return mrb_nil_value();
+}
+
 static mrb_value api_display(mrb_state *mrb, mrb_value self)
 {
     SDL_Flip(screen);
@@ -331,6 +359,7 @@ void api_init(mrb_state *mrb)
     mrb_define_method(mrb, mrb->kernel_module, "circle", api_circle, ARGS_REQ(3) | ARGS_OPT(1));
     mrb_define_method(mrb, mrb->kernel_module, "polygon", api_polygon, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "text", api_text, ARGS_REQ(3));
+    mrb_define_method(mrb, mrb->kernel_module, "image_int", api_image_int, ARGS_REQ(3));
     mrb_define_method(mrb, mrb->kernel_module, "time", api_time, ARGS_NONE());
     mrb_define_method(mrb, mrb->kernel_module, "delay", api_delay, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "display", api_display, ARGS_NONE());
