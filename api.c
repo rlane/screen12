@@ -17,6 +17,7 @@
 
 #include "main.h"
 #include "api.h"
+#include "surface_table.h"
 
 /* Symbols */
 static mrb_value sym_fill, sym_aa, sym_position, sym_rotation;
@@ -258,29 +259,55 @@ static mrb_value api_text(mrb_state *mrb, mrb_value self)
 }
 
 /*
- * TODO optimize (cache image, convert to screen format)
- * TODO provide Ruby wrapper
- * api_image_int(x, y,
- *               clip_x, clip_y, clip_width, clip_height,
- *               colorkey_red, colorkey_green, colorkey_blue,
- *               image_path)
+ * load_image(image_path, colorkey_red, colorkey_green, colorkey_blue)
  */
-static mrb_value api_image_int(mrb_state *mrb, mrb_value self)
+static mrb_value api_load_image(mrb_state *mrb, mrb_value self)
 {
-    int x, y, cx, cy, cw, ch, kr, kg, kb;
     mrb_value str;
-    mrb_get_args(mrb, "iiiiiiiiio", &x, &y, &cx, &cy, &cw, &ch, &kr, &kg, &kb, &str);
+    int kr, kg, kb;
+    mrb_get_args(mrb, "oiii", &str, &kr, &kg, &kb);
     const char *path = mrb_string_value_cstr(mrb, &str);
-    SDL_Surface *img = IMG_Load(path);
-    if (img == NULL) {
-        mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid image path");
+    fprintf(stderr, "loading image %s\n", path);
+    SDL_Surface *surface = IMG_Load(path);
+    if (surface == NULL) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "failed to load image");
     }
-    Uint32 colorkey = SDL_MapRGB(img->format, kr, kg, kb);
-    SDL_SetColorKey(img, SDL_SRCCOLORKEY, colorkey);
+    // TODO convert to screen format
+    if (kr > 0) {
+        Uint32 colorkey = SDL_MapRGB(surface->format, kr, kg, kb);
+        SDL_SetColorKey(surface, SDL_SRCCOLORKEY, colorkey);
+    }
+    int surface_handle = surface_table_insert(surface);
+    return mrb_fixnum_value(surface_handle);
+}
+
+static mrb_value api_free_surface(mrb_state *mrb, mrb_value self)
+{
+    int surface_handle;
+    mrb_get_args(mrb, "i", &surface_handle);
+    SDL_Surface *surface = surface_table_lookup(surface_handle);
+    if (surface == NULL) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid surface handle");
+    }
+    surface_table_remove(surface_handle);
+    SDL_FreeSurface(surface);
+    return mrb_nil_value();
+}
+
+/*
+ * api_blit(src_surface_handle, x, y, clip_x, clip_y, clip_w, clip_h);
+ */
+static mrb_value api_blit(mrb_state *mrb, mrb_value self)
+{
+    int src_surface_handle, x, y, cx, cy, cw, ch;
+    mrb_get_args(mrb, "iiiiiii", &src_surface_handle, &x, &y, &cx, &cy, &cw, &ch);
+    SDL_Surface *src_surface = surface_table_lookup(src_surface_handle);
+    if (src_surface == NULL) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid source surface handle");
+    }
     SDL_Rect clip = { .x = cx, .y = cy, .w = cw, .h = ch };
     SDL_Rect offset = { .x = x, .y = y };
-    SDL_BlitSurface(img, &clip, screen, &offset);
-    SDL_FreeSurface(img);
+    SDL_BlitSurface(src_surface, &clip, screen, &offset);
     return mrb_nil_value();
 }
 
@@ -359,7 +386,9 @@ void api_init(mrb_state *mrb)
     mrb_define_method(mrb, mrb->kernel_module, "circle", api_circle, ARGS_REQ(3) | ARGS_OPT(1));
     mrb_define_method(mrb, mrb->kernel_module, "polygon", api_polygon, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "text", api_text, ARGS_REQ(3));
-    mrb_define_method(mrb, mrb->kernel_module, "image_int", api_image_int, ARGS_REQ(3));
+    mrb_define_method(mrb, mrb->kernel_module, "load_image", api_load_image, ARGS_REQ(4));
+    mrb_define_method(mrb, mrb->kernel_module, "free_surface", api_free_surface, ARGS_REQ(1));
+    mrb_define_method(mrb, mrb->kernel_module, "blit", api_blit, ARGS_REQ(7));
     mrb_define_method(mrb, mrb->kernel_module, "time", api_time, ARGS_NONE());
     mrb_define_method(mrb, mrb->kernel_module, "delay", api_delay, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "display", api_display, ARGS_NONE());
