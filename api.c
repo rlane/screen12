@@ -304,11 +304,17 @@ static mrb_value api_free_surface(mrb_state *mrb, mrb_value self)
  */
 static mrb_value api_blit(mrb_state *mrb, mrb_value self)
 {
-    int src_surface_handle, x, y, cx, cy, cw, ch;
-    mrb_get_args(mrb, "iiiiiii", &src_surface_handle, &x, &y, &cx, &cy, &cw, &ch);
+    int src_surface_handle, x, y, cx = 0, cy = 0, cw = -1, ch = -1;
+    mrb_get_args(mrb, "iii|iiii", &src_surface_handle, &x, &y, &cx, &cy, &cw, &ch);
     SDL_Surface *src_surface = surface_table_lookup(src_surface_handle);
     if (src_surface == NULL) {
         mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid source surface handle");
+    }
+    if (cw == -1) {
+        cw = src_surface->w - cx;
+    }
+    if (ch == -1) {
+        ch = src_surface->h - cy;
     }
     SDL_Rect clip = { .x = cx, .y = cy, .w = cw, .h = ch };
     SDL_Rect offset = { .x = x, .y = y };
