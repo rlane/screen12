@@ -272,12 +272,17 @@ static mrb_value api_load_image(mrb_state *mrb, mrb_value self)
     if (surface == NULL) {
         mrb_raise(mrb, E_ARGUMENT_ERROR, "failed to load image");
     }
-    // TODO convert to screen format
-    if (kr > 0) {
-        Uint32 colorkey = SDL_MapRGB(surface->format, kr, kg, kb);
-        SDL_SetColorKey(surface, SDL_SRCCOLORKEY, colorkey);
+    SDL_Surface *optimized_surface = SDL_DisplayFormat(surface);
+    SDL_FreeSurface(surface);
+    surface = NULL;
+    if (optimized_surface == NULL) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "failed to optimize image");
     }
-    int surface_handle = surface_table_insert(surface);
+    if (kr >= 0) {
+        Uint32 colorkey = SDL_MapRGB(optimized_surface->format, kr, kg, kb);
+        SDL_SetColorKey(optimized_surface, SDL_SRCCOLORKEY, colorkey);
+    }
+    int surface_handle = surface_table_insert(optimized_surface);
     return mrb_fixnum_value(surface_handle);
 }
 
