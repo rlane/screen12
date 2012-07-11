@@ -4,11 +4,11 @@ i = 0
 while true
   clear
   i += 1
-  x = 400 + 300*(Math.cos(i/60.0)/Math::PI)
+  x = 400 + 300*(Math.cos(Math::PI*time/4000.0))
   blit(tileset, 10, 10)
   blit(tileset, x, 300, 48, 140, 24, 28)
   blit(tileset, x, 400, 125, 154, 37, 28)
   display
   keys
-  delay 15
+  delay 30
 end
