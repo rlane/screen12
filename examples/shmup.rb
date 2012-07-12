@@ -27,7 +27,7 @@ def create_enemy
 end
 
 def randomly_create_enemies
-  rate = [10.0 + ([$score,0.0].max/5000.0)**2, 30.0].min
+  rate = [10.0 + ([$score,0.0].max/5000.0)**2, 80.0].min
   if random(0, 100) < rate
     create_enemy
   end
