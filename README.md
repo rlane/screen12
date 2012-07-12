@@ -90,6 +90,7 @@ TODO
 
  - More example games
  - Improve debugging
+ - Document library functions
  - Framerate display
  - Centered option for text
  - Pixel read API

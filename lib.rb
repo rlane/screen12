@@ -43,3 +43,24 @@ def image name, x, y
   blit surface, x, y, cx, cy, cw, ch
   nil
 end
+
+
+## Math functions
+# Todo benchmark some of these against C implementations
+PI = Math::PI
+
+def distance x1, y1, x2, y2
+  Math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
+end
+
+def sin angle
+  Math.sin(angle)
+end
+
+def cos angle
+  Math.cos(angle)
+end
+
+def tan angle
+  Math.tan(angle)
+end

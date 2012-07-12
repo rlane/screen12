@@ -93,16 +93,14 @@ end
 def check_collisions
   $bullets.each do |bullet|
     if bullet[:enemy]
-      dist = Math.sqrt((bullet[:x] - $player[:x])**2 + (bullet[:y] - $player[:y])**2)
-      if dist < PLAYER_RADIUS
+      if distance($player[:x], $player[:y], bullet[:x], bullet[:y]) < PLAYER_RADIUS
         $score -= 1000
         bullet[:dead] = true
         break
       end
     else
       $enemies.each do |enemy|
-        dist = Math.sqrt((bullet[:x] - enemy[:x])**2 + (bullet[:y] - enemy[:y])**2)
-        if dist < ENEMY_RADIUS
+        if distance(enemy[:x], enemy[:y], bullet[:x], bullet[:y]) < ENEMY_RADIUS
           enemy[:health] -= 1
           if enemy[:health] == 0
             $score += 100

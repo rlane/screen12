@@ -65,16 +65,16 @@ def handle_input
 
   if keys.member?('space') or keys.member?('down')
     angle = $player[:angle]
-    bvx = $player[:vx] + BULLET_SPEED * Math.cos(angle)
-    bvy = $player[:vy] + BULLET_SPEED * Math.sin(angle)
+    bvx = $player[:vx] + BULLET_SPEED * cos(angle)
+    bvy = $player[:vy] + BULLET_SPEED * sin(angle)
     bullet = { x: $player[:x], y: $player[:y], vx: bvx, vy: bvy, ttl: BULLET_LIFETIME }
     $bullets.push(bullet)
   end
 end
 
 def move_player
-  $player[:vx] += $player[:main_acc] * Math.cos($player[:angle])
-  $player[:vy] += $player[:main_acc] * Math.sin($player[:angle])
+  $player[:vx] += $player[:main_acc] * cos($player[:angle])
+  $player[:vy] += $player[:main_acc] * sin($player[:angle])
   $player[:angular_velocity] += $player[:angular_acc]
   $player[:angle] += $player[:angular_velocity]
   $player[:x] = ($player[:x] + $player[:vx]) % SCREEN_WIDTH
@@ -102,8 +102,7 @@ end
 def collide
   $asteroids.each do |asteroid|
     $bullets.each do |bullet|
-      dist = Math.sqrt((asteroid[:x] - bullet[:x])**2 + (asteroid[:y] - bullet[:y])**2)
-      if dist < ASTEROID_RADIUS
+      if distance(asteroid[:x], asteroid[:y], bullet[:x], bullet[:y]) < ASTEROID_RADIUS
         bullet[:ttl] = 0
         $asteroids.delete asteroid
         $score += 100
