@@ -1,5 +1,6 @@
 PLAYER_SPEED = 8.0
 PLAYER_BULLET_SPEED = 14
+ENEMY_RADIUS = 12
 
 $player = {
   x: 400,
@@ -75,7 +76,7 @@ def check_collisions
   $bullets.each do |bullet|
     $enemies.each do |enemy|
       dist = Math.sqrt((bullet[:x] - enemy[:x])**2 + (bullet[:y] - enemy[:y])**2)
-      if dist < 20
+      if dist < ENEMY_RADIUS
         enemy[:health] -= 1
         bullet[:dead] = true
         break
@@ -88,7 +89,7 @@ end
 
 def draw_enemies
   $enemies.each do |enemy|
-    image('tyrian/enemy', enemy[:x], enemy[:y])
+    image('tyrian/enemy', enemy[:x]-7, enemy[:y]-12)
   end
 end
 
@@ -99,7 +100,7 @@ def draw_bullets
 end
 
 def draw_player
-  image('tyrian/player', $player[:x], $player[:y])
+  image('tyrian/player', $player[:x]-18, $player[:y])
 end
 
 while true
