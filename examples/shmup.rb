@@ -2,6 +2,8 @@ PLAYER_SPEED = 8.0
 PLAYER_BULLET_SPEED = 14
 ENEMY_RADIUS = 12
 
+$score = 0
+
 $player = {
   x: 400,
   y: 500,
@@ -61,6 +63,7 @@ def move_enemies
     enemy[:x] += enemy[:vx]
     enemy[:y] += enemy[:vy]
   end
+  $score -= 50 * $enemies.select { |enemy| enemy[:y] > SCREEN_HEIGHT }.size
   $enemies = $enemies.select { |enemy| enemy[:y] < SCREEN_HEIGHT }
 end
 
@@ -78,6 +81,9 @@ def check_collisions
       dist = Math.sqrt((bullet[:x] - enemy[:x])**2 + (bullet[:y] - enemy[:y])**2)
       if dist < ENEMY_RADIUS
         enemy[:health] -= 1
+        if enemy[:health] == 0
+          $score += 100
+        end
         bullet[:dead] = true
         break
       end
@@ -103,6 +109,10 @@ def draw_player
   image('tyrian/player', $player[:x]-18, $player[:y])
 end
 
+def draw_score
+  text(30, 570, "SCORE: #{$score}")
+end
+
 while true
   handle_input
   randomly_create_enemies
@@ -113,6 +123,7 @@ while true
   draw_enemies
   draw_bullets
   draw_player
+  draw_score
   display
   delay 30
 end
