@@ -216,7 +216,7 @@ static mrb_value api_polygon(mrb_state *mrb, mrb_value self)
     double rotation = 0.0;
     if (rotated) {
         mrb_check_type(mrb, rotation_arg, MRB_TT_FLOAT);
-        rotation = mrb_float(rotation_arg);
+        rotation = mrb_float(rotation_arg) * 2*M_PI/360;
     }
 
     mrb_value coords = mrb_check_array_type(mrb, coords_arg);

@@ -103,7 +103,6 @@ TODO
  - Move Ruby execution into its own thread
  - Decide between callback or main-loop programming model
  - Decide between keyword arguments or OpenGL-style state
- - Decide between degrees and radians
  - Tutorials
  - Native Client port
  - Web-based IDE

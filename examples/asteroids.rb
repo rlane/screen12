@@ -2,7 +2,7 @@
 # Use the arrow keys to move your ship and space to shoot its gun.
 
 MAIN_ACC = 0.10
-ANGULAR_ACC = -0.0015
+ANGULAR_ACC = -0.08
 BULLET_SPEED = 5.0
 BULLET_LIFETIME = 60
 ASTEROID_MAX_SPEED = 0.9
