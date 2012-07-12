@@ -14,7 +14,8 @@ def create_enemy
     x: random(100, SCREEN_WIDTH-100),
     y: -30.0,
     vx: 0.0,
-    vy: random(1.0, 3.0)
+    vy: random(1.0, 3.0),
+    health: 2,
   }
   $enemies.push(enemy)
 end
@@ -48,6 +49,7 @@ def handle_input
       y: $player[:y],
       vx: 0.0,
       vy: -PLAYER_BULLET_SPEED,
+      dead: false,
     }
     $bullets.push(bullet)
   end
@@ -67,6 +69,21 @@ def move_bullets
     bullet[:y] += bullet[:vy]
   end
   $bullets = $bullets.select { |bullet| bullet[:y] > 0 }
+end
+
+def check_collisions
+  $bullets.each do |bullet|
+    $enemies.each do |enemy|
+      dist = Math.sqrt((bullet[:x] - enemy[:x])**2 + (bullet[:y] - enemy[:y])**2)
+      if dist < 20
+        enemy[:health] -= 1
+        bullet[:dead] = true
+        break
+      end
+    end
+  end
+  $enemies = $enemies.select { |enemy| enemy[:health] > 0 }
+  $bullets = $bullets.select { |bullet| bullet[:dead] == false }
 end
 
 def draw_enemies
@@ -90,6 +107,7 @@ while true
   randomly_create_enemies
   move_enemies
   move_bullets
+  check_collisions
   clear
   draw_enemies
   draw_bullets
