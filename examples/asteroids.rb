@@ -1,8 +1,8 @@
 # Incomplete asteroids clone
 # Use the arrow keys to move your ship and space to shoot its gun.
 
-MAIN_ACC = 0.5
-ANGULAR_ACC = -0.005
+MAIN_ACC = 0.10
+ANGULAR_ACC = -0.0015
 BULLET_SPEED = 5.0
 BULLET_LIFETIME = 60
 ASTEROID_MAX_SPEED = 0.9
@@ -55,10 +55,6 @@ def handle_input
     $player[:main_acc] += MAIN_ACC
   end
 
-  if keys.member?('down')
-    $player[:main_acc] -= MAIN_ACC
-  end
-
   if keys.member?('left')
     $player[:angular_acc] += ANGULAR_ACC
   end
@@ -67,7 +63,7 @@ def handle_input
     $player[:angular_acc] -= ANGULAR_ACC
   end
 
-  if keys.member?('space')
+  if keys.member?('space') or keys.member?('down')
     angle = $player[:angle]
     bvx = $player[:vx] + BULLET_SPEED * Math.cos(angle)
     bvy = $player[:vy] + BULLET_SPEED * Math.sin(angle)
