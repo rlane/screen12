@@ -1,6 +1,9 @@
+PLAYER_RADIUS = 15
 PLAYER_SPEED = 8.0
 PLAYER_BULLET_SPEED = 14
 ENEMY_RADIUS = 12
+ENEMY_FIRE_CHANCE = 0.5
+ENEMY_BULLET_SPEED = 2
 
 $score = 0
 
@@ -54,6 +57,7 @@ def handle_input
       vx: 0.0,
       vy: -PLAYER_BULLET_SPEED,
       dead: false,
+      enemy: false,
     }
     $bullets.push(bullet)
   end
@@ -63,6 +67,16 @@ def move_enemies
   $enemies.each do |enemy|
     enemy[:x] += enemy[:vx]
     enemy[:y] += enemy[:vy]
+    if random(0, 100) < ENEMY_FIRE_CHANCE
+      $bullets << {
+        x: enemy[:x],
+        y: enemy[:y],
+        vx: 0.0,
+        vy: enemy[:vy] + ENEMY_BULLET_SPEED,
+        dead: false,
+        enemy: true,
+      }
+    end
   end
   $score -= 50 * $enemies.select { |enemy| enemy[:y] > SCREEN_HEIGHT }.size
   $enemies = $enemies.select { |enemy| enemy[:y] < SCREEN_HEIGHT }
@@ -73,20 +87,29 @@ def move_bullets
     bullet[:x] += bullet[:vx]
     bullet[:y] += bullet[:vy]
   end
-  $bullets = $bullets.select { |bullet| bullet[:y] > 0 }
+  $bullets = $bullets.select { |bullet| bullet[:y] > 0 && bullet[:y] < SCREEN_HEIGHT }
 end
 
 def check_collisions
   $bullets.each do |bullet|
-    $enemies.each do |enemy|
-      dist = Math.sqrt((bullet[:x] - enemy[:x])**2 + (bullet[:y] - enemy[:y])**2)
-      if dist < ENEMY_RADIUS
-        enemy[:health] -= 1
-        if enemy[:health] == 0
-          $score += 100
-        end
+    if bullet[:enemy]
+      dist = Math.sqrt((bullet[:x] - $player[:x])**2 + (bullet[:y] - $player[:y])**2)
+      if dist < PLAYER_RADIUS
+        $score -= 1000
         bullet[:dead] = true
         break
+      end
+    else
+      $enemies.each do |enemy|
+        dist = Math.sqrt((bullet[:x] - enemy[:x])**2 + (bullet[:y] - enemy[:y])**2)
+        if dist < ENEMY_RADIUS
+          enemy[:health] -= 1
+          if enemy[:health] == 0
+            $score += 100
+          end
+          bullet[:dead] = true
+          break
+        end
       end
     end
   end
@@ -102,12 +125,16 @@ end
 
 def draw_bullets
   $bullets.each do |bullet|
-    image('tyrian/bullet', bullet[:x], bullet[:y])
+    if bullet[:enemy]
+      image('tyrian/bullet2', bullet[:x], bullet[:y])
+    else
+      image('tyrian/bullet', bullet[:x], bullet[:y])
+    end
   end
 end
 
 def draw_player
-  image('tyrian/player', $player[:x]-18, $player[:y])
+  image('tyrian/player', $player[:x]-18, $player[:y]-14)
 end
 
 def draw_score
