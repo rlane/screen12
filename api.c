@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <malloc.h>
 #include <SDL.h>
 #include <SDL_gfxPrimitives.h>
 #include <SDL_image.h>
