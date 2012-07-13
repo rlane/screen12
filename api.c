@@ -6,6 +6,7 @@
 #include <SDL.h>
 #include <SDL_gfxPrimitives.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 
 #include "mruby.h"
 #include "mruby/proc.h"
@@ -343,6 +344,34 @@ static mrb_value api_delay(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
+static mrb_value api_sound(mrb_state *mrb, mrb_value self)
+{
+    mrb_value samples;
+    mrb_get_args(mrb, "o", &samples);
+    mrb_check_type(mrb, samples, MRB_TT_ARRAY);
+    int n = RARRAY_LEN(samples);
+    if (n == 0) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "empty samples array");
+    }
+    int16_t *tmp_samples = malloc(n * sizeof(*tmp_samples));
+    mrb_value *samples_ptr = RARRAY_PTR(samples);
+    int i;
+    for (i = 0; i < n; i++) {
+        mrb_value sample = samples_ptr[i];
+        mrb_check_type(mrb, sample, MRB_TT_FIXNUM);
+        tmp_samples[i] = mrb_fixnum(sample);
+    }
+    Mix_Chunk *chunk = Mix_QuickLoad_RAW((uint8_t*)tmp_samples, n * sizeof(*tmp_samples));
+    free(tmp_samples);
+    if (!chunk) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "Mix_QuickLoad_RAW failed");
+    }
+    if (Mix_PlayChannel(-1, chunk, 0) < 0) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "Mix_PlayChannel failed");
+    }
+    return mrb_nil_value();
+}
+
 static mrb_value api_keys(mrb_state *mrb, mrb_value self)
 {
     process_events();
@@ -402,6 +431,7 @@ void api_init(mrb_state *mrb)
     mrb_define_method(mrb, mrb->kernel_module, "blit", api_blit, ARGS_REQ(7));
     mrb_define_method(mrb, mrb->kernel_module, "time", api_time, ARGS_NONE());
     mrb_define_method(mrb, mrb->kernel_module, "delay", api_delay, ARGS_REQ(1));
+    mrb_define_method(mrb, mrb->kernel_module, "sound", api_sound, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "display", api_display, ARGS_NONE());
     mrb_define_method(mrb, mrb->kernel_module, "keys", api_keys, ARGS_NONE());
     mrb_define_method(mrb, mrb->kernel_module, "mouse_position", api_mouse_position, ARGS_NONE());
@@ -409,4 +439,6 @@ void api_init(mrb_state *mrb)
 
     mrb_define_const(mrb, mrb->kernel_module, "SCREEN_WIDTH", mrb_fixnum_value(screen_width));
     mrb_define_const(mrb, mrb->kernel_module, "SCREEN_HEIGHT", mrb_fixnum_value(screen_height));
+    mrb_define_const(mrb, mrb->kernel_module, "AUDIO_SAMPLING_FREQ", mrb_fixnum_value(audio_sampling_freq));
+    mrb_define_const(mrb, mrb->kernel_module, "AUDIO_MAX_AMP", mrb_fixnum_value(audio_max_amp));
 }

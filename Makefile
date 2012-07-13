@@ -1,7 +1,7 @@
 MRUBY := mruby
 BIN := screen12
 
-PKGS := sdl SDL_gfx SDL_image
+PKGS := sdl SDL_gfx SDL_image SDL_mixer
 OBJS := screen12.o api.o surface_table.o
 
 CFLAGS := -I $(MRUBY)/include -g -Os -Wall -Werror $(shell pkg-config --cflags $(PKGS))

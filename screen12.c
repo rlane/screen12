@@ -6,6 +6,7 @@
 #include <signal.h>
 #include <SDL.h>
 #include <SDL_gfxPrimitives.h>
+#include <SDL_mixer.h>
 
 #include "mruby.h"
 #include "mruby/proc.h"
@@ -23,6 +24,8 @@ static mrb_irep *parse_file(mrb_state *mrb, const char *filename);
 SDL_Surface *screen;
 uint32_t color = 0xFFFFFFFF;
 int screen_width = 800, screen_height = 600;
+int audio_sampling_freq = MIX_DEFAULT_FREQUENCY;
+int audio_max_amp = 32767;
 
 int main(int argc, char **argv)
 {
@@ -50,10 +53,15 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     signal(SIGINT, SIG_DFL);
 
     screen = SDL_SetVideoMode(screen_width, screen_height, 0, SDL_SWSURFACE);
+
+    if (Mix_OpenAudio(audio_sampling_freq, AUDIO_S16SYS, 1, 4096) < 0) {
+        fprintf(stderr, "Mix_OpenAudio: %s\n", Mix_GetError());
+        return 1;
+    }
 
     api_init(mrb);
 
@@ -68,6 +76,8 @@ int main(int argc, char **argv)
         mrb_p(mrb, mrb_obj_value(mrb->exc));
         return 1;
     }
+
+    Mix_CloseAudio();
 
     return 0;
 }
