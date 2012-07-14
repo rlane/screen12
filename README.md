@@ -15,8 +15,8 @@ Installation
 
 You need SDL, SDL_gfx, and SDL_image installed.
 
- - Ubuntu: `sudo apt-get install libsdl1.2-dev libsdl-gfx1.2-dev libsdl-image1.2-dev`
- - Arch Linux: `sudo pacman -Sy sdl sdl_gfx sdl_image`
+ - Ubuntu: `sudo apt-get install libsdl1.2-dev libsdl-gfx1.2-dev libsdl-image1.2-dev libsdl-mixer1.2-dev`
+ - Arch Linux: `sudo pacman -Sy sdl sdl_gfx sdl_image sdl_mixer`
 
 To build the project:
 
