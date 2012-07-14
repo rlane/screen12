@@ -83,19 +83,18 @@ def frequency(octave, note)
   A4 * (TUNE**half_steps)
 end
 
+def envelope(frac)
+  if frac < 0.75/2 then frac/0.75
+  elsif frac < 0.75 then 1 - frac/0.75
+  else 0
+  end
+end
+
 def note_waveform(octave, note, duration, volume)
   freq = frequency(octave, note)
   amp = AUDIO_MAX_AMP * volume
   st = nil
-  envelope = lambda do |t|
-    st ||= t
-    frac = (t - st)/duration
-    if frac < 0.75/2 then frac/0.75
-    elsif frac < 0.75 then 1 - frac/0.75
-    else 0
-    end
-  end
-  wave = lambda { |t| envelope[t] * Math.sin(2.0*Math::PI*t*freq) }
+  wave = lambda { |t| envelope(t/duration) * Math.sin(2.0*Math::PI*t*freq) }
   n = (AUDIO_SAMPLING_FREQ*duration).to_i
   (0...n).map { |i| (wave[i.to_f/AUDIO_SAMPLING_FREQ] * amp).to_i }
 end
