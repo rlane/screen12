@@ -105,15 +105,13 @@ def play str
   len = 0.25
   volume = 0.5
   str.split.each do |token|
-    case token
-    when '<' then octave -= 1
-    when '>' then octave += 1
+    if token == '<' then octave -= 1
+    elsif token == '>' then octave += 1
+    elsif token[0] == 'L' then len = 1.0/token[1..-1].to_i
+    elsif NOTES.member? token
+      waveform.concat(note_waveform(octave, token, len, volume))
     else
-      if NOTES.member? token
-        waveform.concat(note_waveform(octave, token, len, volume))
-      else
-        puts("unexpected play token #{token.inspect}")
-      end
+      puts("unexpected play token #{token.inspect}")
     end
   end
   sound(waveform)
