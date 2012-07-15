@@ -116,8 +116,8 @@ def play_parse str
     elsif token[0] == 'T' then tempo = token[1..-1].to_i
     elsif token[0] == 'O' then octave = token[1..-1].to_i
     elsif ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'P'].member? token[0..0]
-      if token[1..1] == '#'
-        note = token[0..1]
+      if token[1..1] == '#' or token[1..1] == '+'
+        note = token[0..0] + '#'
         note_duration_str = token[2..-1]
       else
         note = token[0..0]
@@ -136,7 +136,7 @@ def play_parse str
         waveform.concat(note_waveform(octave, 'A', len, 0))
       end
     else
-      puts("unexpected play token #{token.inspect}")
+      raise("unexpected play token #{token.inspect}")
     end
   end
   [waveform, total_len]
