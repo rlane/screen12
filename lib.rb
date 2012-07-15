@@ -142,9 +142,17 @@ def play_parse str, opts={}
   [waveform, total_len]
 end
 
+$play_end_time = -1
+
 def play str, opts={}
-  waveform, total_len = play_parse(str)
+  waveform, total_len = play_parse(str, opts)
   sound(waveform)
   waveform.clear
   delay(total_len*1000) if opts[:delay]
+  end_time = time + total_len*1000
+  $play_end_time = [$play_end_time, end_time].max
+end
+
+def playing?
+  $play_end_time > time
 end
