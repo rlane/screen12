@@ -79,6 +79,7 @@ TUNE = 2.0**(1.0/12)
 A4 = 440.00
 
 def frequency(octave, note)
+  raise "no such note #{note.inspect}" unless NOTES.member?(note)
   half_steps = (octave - 4)*NOTES.size + (NOTES.index(note) - NOTES.index('A'))
   A4 * (TUNE**half_steps)
 end
@@ -113,10 +114,22 @@ def play_parse str
     elsif token[0] == 'L' then duration = token[1..-1].to_i
     elsif token[0] == 'T' then tempo = token[1..-1].to_i
     elsif token[0] == 'O' then octave = token[1..-1].to_i
-    elsif NOTES.member? token
-      len = 4*60.0/(tempo*duration)
+    elsif NOTES.member? token[0..0]
+      if token[1..1] == '#'
+        note = token[0..1]
+        note_duration_str = token[2..-1]
+      else
+        note = token[0..0]
+        note_duration_str = token[1..-1]
+      end
+      if not note_duration_str.empty?
+        note_duration = note_duration_str.to_i
+      else
+        note_duration = duration
+      end
+      len = 4*60.0/(tempo*note_duration)
       total_len += len
-      waveform.concat(note_waveform(octave, token, len, volume))
+      waveform.concat(note_waveform(octave, note, len, volume))
     else
       puts("unexpected play token #{token.inspect}")
     end
