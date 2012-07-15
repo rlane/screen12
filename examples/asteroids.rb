@@ -110,6 +110,7 @@ def collide
       if distance(asteroid[:x], asteroid[:y], bullet[:x], bullet[:y]) < ASTEROID_RADIUS
         bullet[:ttl] = 0
         $asteroids.delete asteroid
+        sound("explosion#{random(1,3).round}")
         $score += 100
         break
       end
