@@ -110,6 +110,7 @@ def play_parse str
     if token == '<' then octave -= 1
     elsif token == '>' then octave += 1
     elsif token[0] == 'L' then duration = token[1..-1].to_i
+    elsif token[0] == 'T' then tempo = token[1..-1].to_i
     elsif NOTES.member? token
       len = 4*60.0/(tempo*duration)
       total_len += len
