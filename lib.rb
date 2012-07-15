@@ -102,7 +102,7 @@ end
 def play_parse str
   waveform = []
   octave = 4
-  tempo = 240 # quarter notes per minute
+  tempo = 120 # quarter notes per minute
   duration = 4 # default note is a quarter note
   volume = 0.5
   total_len = 0.0
