@@ -100,12 +100,12 @@ def note_waveform(octave, note, duration, volume)
   (0...n).map { |i| (wave[i.to_f/AUDIO_SAMPLING_FREQ] * amp).to_i }
 end
 
-def play_parse str
+def play_parse str, opts={}
   waveform = []
   octave = 4
   tempo = 120 # quarter notes per minute
   duration = 4 # default note is a quarter note
-  volume = 0.5
+  volume = opts[:volume] || 0.5
   total_len = 0.0
   str.split.each do |token|
     # TODO convert to regexes when mruby supports them
