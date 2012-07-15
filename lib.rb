@@ -107,6 +107,7 @@ def play_parse str
   volume = 0.5
   total_len = 0.0
   str.split.each do |token|
+    token.upcase!
     if token == '<' then octave -= 1
     elsif token == '>' then octave += 1
     elsif token[0] == 'L' then duration = token[1..-1].to_i
