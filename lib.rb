@@ -121,8 +121,9 @@ def play_parse str
   [waveform, total_len]
 end
 
-def play str
+def play str, opts={}
   waveform, total_len = play_parse(str)
   sound(waveform)
   waveform.clear
+  delay(total_len*1000) if opts[:delay]
 end
