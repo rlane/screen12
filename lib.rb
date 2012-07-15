@@ -99,21 +99,30 @@ def note_waveform(octave, note, duration, volume)
   (0...n).map { |i| (wave[i.to_f/AUDIO_SAMPLING_FREQ] * amp).to_i }
 end
 
-def play str
+def play_parse str
   waveform = []
   octave = 4
-  len = 0.25
+  tempo = 240 # quarter notes per minute
+  duration = 4 # default note is a quarter note
   volume = 0.5
+  total_len = 0.0
   str.split.each do |token|
     if token == '<' then octave -= 1
     elsif token == '>' then octave += 1
-    elsif token[0] == 'L' then len = 1.0/token[1..-1].to_i
+    elsif token[0] == 'L' then duration = token[1..-1].to_i
     elsif NOTES.member? token
+      len = 4*60.0/(tempo*duration)
+      total_len += len
       waveform.concat(note_waveform(octave, token, len, volume))
     else
       puts("unexpected play token #{token.inspect}")
     end
   end
+  [waveform, total_len]
+end
+
+def play str
+  waveform, total_len = play_parse(str)
   sound(waveform)
   waveform.clear
 end
