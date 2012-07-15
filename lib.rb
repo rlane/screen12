@@ -74,6 +74,12 @@ end
 
 
 ## Audio functions
+def sound samples
+  chunk = load_raw_sound(samples)
+  play_sound(chunk)
+  release_sound(chunk)
+end
+
 NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 TUNE = 2.0**(1.0/12)
 A4 = 440.00

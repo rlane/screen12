@@ -20,6 +20,7 @@
 #include "main.h"
 #include "api.h"
 #include "surface_table.h"
+#include "sound.h"
 
 /* Symbols */
 static mrb_value sym_fill, sym_aa, sym_position, sym_rotation;
@@ -347,14 +348,13 @@ static mrb_value api_delay(mrb_state *mrb, mrb_value self)
 
 static void channel_finished_cb(int channel) {
     Mix_Chunk *chunk = Mix_GetChunk(channel);
-    free(chunk->abuf);
-    Mix_FreeChunk(chunk);
+    struct sound *sound = (struct sound *)chunk;
+    //fprintf(stderr, "finished playing sound %p\n", sound);
+    sound_release(sound);
 }
 
-static mrb_value api_sound(mrb_state *mrb, mrb_value self)
+static mrb_value api_load_raw_sound(mrb_state *mrb, mrb_value self)
 {
-    Mix_ChannelFinished(channel_finished_cb);
-
     mrb_value samples;
     mrb_get_args(mrb, "o", &samples);
     mrb_check_type(mrb, samples, MRB_TT_ARRAY);
@@ -362,7 +362,9 @@ static mrb_value api_sound(mrb_state *mrb, mrb_value self)
     if (n == 0) {
         mrb_raise(mrb, E_ARGUMENT_ERROR, "empty samples array");
     }
-    int16_t *tmp_samples = malloc(n * sizeof(*tmp_samples));
+
+    int16_t *tmp_samples = SDL_malloc(n * sizeof(*tmp_samples));
+    assert(tmp_samples);
     mrb_value *samples_ptr = RARRAY_PTR(samples);
     int i;
     for (i = 0; i < n; i++) {
@@ -370,11 +372,46 @@ static mrb_value api_sound(mrb_state *mrb, mrb_value self)
         mrb_check_type(mrb, sample, MRB_TT_FIXNUM);
         tmp_samples[i] = mrb_fixnum(sample);
     }
+
     Mix_Chunk *chunk = Mix_QuickLoad_RAW((uint8_t*)tmp_samples, n * sizeof(*tmp_samples));
-    if (!chunk) {
-        mrb_raise(mrb, E_ARGUMENT_ERROR, "Mix_QuickLoad_RAW failed");
+    assert(chunk);
+
+    struct sound *sound = sound_create(chunk);
+    assert(sound);
+    
+    int sound_handle = sound_table_insert(sound);
+    sound_release(sound);
+    if (sound_handle == -1) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR /* XXX */, "too many sounds loaded");
     }
-    if (Mix_PlayChannel(-1, chunk, 0) < 0) {
+
+    return mrb_fixnum_value(sound_handle);
+}
+
+static mrb_value api_release_sound(mrb_state *mrb, mrb_value self)
+{
+    int sound_handle;
+    mrb_get_args(mrb, "i", &sound_handle);
+    struct sound *sound = sound_table_lookup(sound_handle);
+    if (sound == NULL) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid sound handle");
+    }
+
+    sound_table_remove(sound_handle);
+    sound_release(sound);
+    return mrb_nil_value();
+}
+
+static mrb_value api_play_sound(mrb_state *mrb, mrb_value self)
+{
+    int sound_handle;
+    mrb_get_args(mrb, "i", &sound_handle);
+    struct sound *sound = sound_table_lookup(sound_handle);
+    if (sound == NULL) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "invalid sound handle");
+    }
+
+    if (Mix_PlayChannel(-1, &sound->chunk, 0) < 0) {
         mrb_raise(mrb, E_ARGUMENT_ERROR, "Mix_PlayChannel failed");
     }
     return mrb_nil_value();
@@ -424,6 +461,8 @@ static mrb_value api_mouse_buttons(mrb_state *mrb, mrb_value self)
 
 void api_init(mrb_state *mrb)
 {
+    Mix_ChannelFinished(channel_finished_cb);
+
     sym_init(mrb);
 
     mrb_define_method(mrb, mrb->kernel_module, "color", api_color, ARGS_REQ(4));
@@ -439,7 +478,9 @@ void api_init(mrb_state *mrb)
     mrb_define_method(mrb, mrb->kernel_module, "blit", api_blit, ARGS_REQ(7));
     mrb_define_method(mrb, mrb->kernel_module, "time", api_time, ARGS_NONE());
     mrb_define_method(mrb, mrb->kernel_module, "delay", api_delay, ARGS_REQ(1));
-    mrb_define_method(mrb, mrb->kernel_module, "sound", api_sound, ARGS_REQ(1));
+    mrb_define_method(mrb, mrb->kernel_module, "load_raw_sound", api_load_raw_sound, ARGS_REQ(1));
+    mrb_define_method(mrb, mrb->kernel_module, "release_sound", api_release_sound, ARGS_REQ(1));
+    mrb_define_method(mrb, mrb->kernel_module, "play_sound", api_play_sound, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "display", api_display, ARGS_NONE());
     mrb_define_method(mrb, mrb->kernel_module, "keys", api_keys, ARGS_NONE());
     mrb_define_method(mrb, mrb->kernel_module, "mouse_position", api_mouse_position, ARGS_NONE());
