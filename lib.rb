@@ -108,13 +108,14 @@ def play_parse str
   volume = 0.5
   total_len = 0.0
   str.split.each do |token|
+    # TODO convert to regexes when mruby supports them
     token.upcase!
     if token == '<' then octave -= 1
     elsif token == '>' then octave += 1
     elsif token[0] == 'L' then duration = token[1..-1].to_i
     elsif token[0] == 'T' then tempo = token[1..-1].to_i
     elsif token[0] == 'O' then octave = token[1..-1].to_i
-    elsif NOTES.member? token[0..0]
+    elsif ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'P'].member? token[0..0]
       if token[1..1] == '#'
         note = token[0..1]
         note_duration_str = token[2..-1]
@@ -129,7 +130,11 @@ def play_parse str
       end
       len = 4*60.0/(tempo*note_duration)
       total_len += len
-      waveform.concat(note_waveform(octave, note, len, volume))
+      if note != 'P'
+        waveform.concat(note_waveform(octave, note, len, volume))
+      else
+        waveform.concat(note_waveform(octave, 'A', len, 0))
+      end
     else
       puts("unexpected play token #{token.inspect}")
     end
