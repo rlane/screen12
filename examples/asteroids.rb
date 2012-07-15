@@ -5,6 +5,7 @@ MAIN_ACC = 0.10
 ANGULAR_ACC = -0.08
 BULLET_SPEED = 5.0
 BULLET_LIFETIME = 60
+FIRE_TIME = 400
 ASTEROID_MAX_SPEED = 0.9
 ASTEROID_RADIUS = 20
 NUM_ASTEROIDS = 4
@@ -35,6 +36,7 @@ $bullets = []
 $asteroids = []
 
 $score = 0
+$last_fire_time = 0
 
 def create_asteroids
   NUM_ASTEROIDS.times do
@@ -63,12 +65,15 @@ def handle_input
     $player[:angular_acc] -= ANGULAR_ACC
   end
 
-  if keys.member?('space') or keys.member?('down')
+  if (keys.member?('space') or keys.member?('down')) and
+     ($last_fire_time + FIRE_TIME < time)
     angle = $player[:angle]
     bvx = $player[:vx] + BULLET_SPEED * cos(angle)
     bvy = $player[:vy] + BULLET_SPEED * sin(angle)
     bullet = { x: $player[:x], y: $player[:y], vx: bvx, vy: bvy, ttl: BULLET_LIFETIME }
     $bullets.push(bullet)
+    sound("laser")
+    $last_fire_time = time
   end
 end
 

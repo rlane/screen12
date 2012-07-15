@@ -74,8 +74,15 @@ end
 
 
 ## Audio functions
-def sound samples
-  chunk = load_raw_sound(samples)
+def sound snd
+  if snd.is_a? String
+    # TODO cache
+    chunk = load_sound("resources/#{snd}.wav")
+  elsif snd.is_a? Array
+    chunk = load_raw_sound(snd)
+  else
+    raise "unexpected sound argument type: #{snd.class}"
+  end
   play_sound(chunk)
   release_sound(chunk)
 end

@@ -353,6 +353,29 @@ static void channel_finished_cb(int channel) {
     sound_release(sound);
 }
 
+static mrb_value api_load_sound(mrb_state *mrb, mrb_value self)
+{
+    mrb_value pathobj;
+    mrb_get_args(mrb, "o", &pathobj);
+    const char *path = mrb_string_value_cstr(mrb, &pathobj);
+    fprintf(stderr, "loading sound %s\n", path);
+    Mix_Chunk *chunk = Mix_LoadWAV(path);
+    if (!chunk) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "sound not found");
+    }
+
+    struct sound *sound = sound_create(chunk);
+    assert(sound);
+    
+    int sound_handle = sound_table_insert(sound);
+    sound_release(sound);
+    if (sound_handle == -1) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR /* XXX */, "too many sounds loaded");
+    }
+
+    return mrb_fixnum_value(sound_handle);
+}
+
 static mrb_value api_load_raw_sound(mrb_state *mrb, mrb_value self)
 {
     mrb_value samples;
@@ -478,6 +501,7 @@ void api_init(mrb_state *mrb)
     mrb_define_method(mrb, mrb->kernel_module, "blit", api_blit, ARGS_REQ(7));
     mrb_define_method(mrb, mrb->kernel_module, "time", api_time, ARGS_NONE());
     mrb_define_method(mrb, mrb->kernel_module, "delay", api_delay, ARGS_REQ(1));
+    mrb_define_method(mrb, mrb->kernel_module, "load_sound", api_load_sound, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "load_raw_sound", api_load_raw_sound, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "release_sound", api_release_sound, ARGS_REQ(1));
     mrb_define_method(mrb, mrb->kernel_module, "play_sound", api_play_sound, ARGS_REQ(1));
