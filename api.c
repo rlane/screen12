@@ -345,8 +345,16 @@ static mrb_value api_delay(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
+static void channel_finished_cb(int channel) {
+    Mix_Chunk *chunk = Mix_GetChunk(channel);
+    free(chunk->abuf);
+    Mix_FreeChunk(chunk);
+}
+
 static mrb_value api_sound(mrb_state *mrb, mrb_value self)
 {
+    Mix_ChannelFinished(channel_finished_cb);
+
     mrb_value samples;
     mrb_get_args(mrb, "o", &samples);
     mrb_check_type(mrb, samples, MRB_TT_ARRAY);
@@ -363,7 +371,6 @@ static mrb_value api_sound(mrb_state *mrb, mrb_value self)
         tmp_samples[i] = mrb_fixnum(sample);
     }
     Mix_Chunk *chunk = Mix_QuickLoad_RAW((uint8_t*)tmp_samples, n * sizeof(*tmp_samples));
-    free(tmp_samples);
     if (!chunk) {
         mrb_raise(mrb, E_ARGUMENT_ERROR, "Mix_QuickLoad_RAW failed");
     }
