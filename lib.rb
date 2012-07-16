@@ -74,17 +74,19 @@ end
 
 
 ## Audio functions
+SOUND_CACHE = Hash.new { |h,k| h[k] = load_sound("resources/#{k}.wav") }
+
 def sound snd
   if snd.is_a? String
-    # TODO cache
-    chunk = load_sound("resources/#{snd}.wav")
+    chunk = SOUND_CACHE[snd]
+    play_sound(chunk)
   elsif snd.is_a? Array
     chunk = load_raw_sound(snd)
+    play_sound(chunk)
+    release_sound(chunk)
   else
     raise "unexpected sound argument type: #{snd.class}"
   end
-  play_sound(chunk)
-  release_sound(chunk)
 end
 
 NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
