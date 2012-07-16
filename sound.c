@@ -55,9 +55,11 @@ struct sound *sound_table_lookup(int handle)
     }
 
     struct sound *sound = sound_table[handle];
-    assert(sound->refcount > 0);
-    sound->refcount++;
-    //fprintf(stderr, "acquired sound %p\n", sound);
+    if (sound) {
+      assert(sound->refcount > 0);
+      sound->refcount++;
+      //fprintf(stderr, "acquired sound %p\n", sound);
+    }
     return sound;
 }
 
