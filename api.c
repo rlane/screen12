@@ -435,7 +435,8 @@ static mrb_value api_play_sound(mrb_state *mrb, mrb_value self)
     }
 
     if (Mix_PlayChannel(-1, &sound->chunk, 0) < 0) {
-        mrb_raise(mrb, E_ARGUMENT_ERROR, "Mix_PlayChannel failed");
+        /* No available channels. Ignore the error. */
+        sound_release(sound);
     }
     return mrb_nil_value();
 }
@@ -485,6 +486,7 @@ static mrb_value api_mouse_buttons(mrb_state *mrb, mrb_value self)
 void api_init(mrb_state *mrb)
 {
     Mix_ChannelFinished(channel_finished_cb);
+    Mix_AllocateChannels(256);
 
     sym_init(mrb);
 
