@@ -88,17 +88,20 @@ Below are a few recommendations for example code. These won't be enforced strict
 TODO
 ----
 
+ - Move TODO items to issue tracker
  - More example games
+   - artillery
+   - missile command
+   - platformer
+ - Support animations (explosions)
  - Improve debugging
  - Document library functions
  - Framerate display
  - Centered option for text
  - Pixel read API
  - Keyboard prompt input
- - Sound
  - Remove need for `display`
- - Sprites
- - Draw to sprite
+ - Draw to image
  - Fast assembly language equivalent
  - Move Ruby execution into its own thread
  - Decide between callback or main-loop programming model
