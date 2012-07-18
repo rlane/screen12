@@ -1,2 +1,6 @@
 *.o
-screen12
+/screen12
+/screen12.exe
+/screen12-win32/
+/screen12-win32.zip
+/mruby.build/
