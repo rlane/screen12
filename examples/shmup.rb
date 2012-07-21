@@ -1,11 +1,13 @@
 PLAYER_RADIUS = 15
 PLAYER_SPEED = 8.0
 PLAYER_BULLET_SPEED = 14
+PLAYER_FIRE_TIME = 100
 ENEMY_RADIUS = 12
 ENEMY_FIRE_CHANCE = 0.5
 ENEMY_BULLET_SPEED = 2
 
 $score = 0
+$last_fire_time = 0
 
 $player = {
   x: 400,
@@ -21,7 +23,7 @@ def create_enemy
     y: -30.0,
     vx: 0.0,
     vy: random(1.0, 3.0),
-    health: 2,
+    health: 1,
   }
   $enemies.push(enemy)
 end
@@ -50,7 +52,7 @@ def handle_input
     $player[:y] += PLAYER_SPEED
   end
 
-  if keys.member? 'space'
+  if keys.member? 'space' and ($last_fire_time + PLAYER_FIRE_TIME < time)
     bullet = {
       x: $player[:x],
       y: $player[:y],
@@ -60,6 +62,8 @@ def handle_input
       enemy: false,
     }
     $bullets.push(bullet)
+    $last_fire_time = time
+    sound("laser2")
   end
 end
 
@@ -76,6 +80,7 @@ def move_enemies
         dead: false,
         enemy: true,
       }
+      sound("laser")
     end
   end
   $score -= 50 * $enemies.select { |enemy| enemy[:y] > SCREEN_HEIGHT }.size
@@ -95,6 +100,7 @@ def check_collisions
     if bullet[:enemy]
       if distance($player[:x], $player[:y], bullet[:x], bullet[:y]) < PLAYER_RADIUS
         $score -= 1000
+        sound("hurt1")
         bullet[:dead] = true
         break
       end
@@ -104,6 +110,7 @@ def check_collisions
           enemy[:health] -= 1
           if enemy[:health] == 0
             $score += 100
+            sound("explosion#{random(1,3).round}")
           end
           bullet[:dead] = true
           break

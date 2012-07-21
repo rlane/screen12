@@ -20,6 +20,7 @@
 #include "api.h"
 
 static mrb_irep *parse_file(mrb_state *mrb, const char *filename);
+static int lib_init(mrb_state *mrb);
 
 SDL_Surface *screen;
 uint32_t color = 0xFFFFFFFF;
@@ -42,12 +43,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "Invalid mrb_state, exiting mruby");
         return EXIT_FAILURE;
     }
-
-    mrb_irep *lib_irep = parse_file(mrb, "lib.rb");
-    if (lib_irep == NULL) {
-        return 1;
-    }
-
+    
     mrb_irep *main_irep = parse_file(mrb, path);
     if (main_irep == NULL) {
         return 1;
@@ -65,9 +61,7 @@ int main(int argc, char **argv)
 
     api_init(mrb);
 
-    mrb_run(mrb, mrb_proc_new(mrb, lib_irep), mrb_top_self(mrb));
-    if (mrb->exc) {
-        mrb_p(mrb, mrb_obj_value(mrb->exc));
+    if (lib_init(mrb)) {
         return 1;
     }
 
@@ -110,4 +104,31 @@ static mrb_irep *parse_file(mrb_state *mrb, const char *filename)
     mrb_parser_free(p);
 
     return mrb->irep[n];
+}
+
+static int lib_init(mrb_state *mrb)
+{
+    const char *libs[] = {
+        "lib/image.rb",
+        "lib/math.rb",
+        "lib/prng.rb",
+        "lib/sound.rb",
+        NULL,
+    };
+
+    int i;
+    for (i = 0; libs[i]; i++) {
+        mrb_irep *lib_irep = parse_file(mrb, libs[i]);
+        if (lib_irep == NULL) {
+            return 1;
+        }
+
+        mrb_run(mrb, mrb_proc_new(mrb, lib_irep), mrb_top_self(mrb));
+        if (mrb->exc) {
+            mrb_p(mrb, mrb_obj_value(mrb->exc));
+            return 1;
+        }
+    }
+
+    return 0;
 }
