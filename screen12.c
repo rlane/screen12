@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <signal.h>
+#include <time.h>
 #include <SDL.h>
 #include <SDL_gfxPrimitives.h>
 #include <SDL_mixer.h>
@@ -27,6 +28,7 @@ uint32_t color = 0xFFFFFFFF;
 int screen_width = 800, screen_height = 600;
 int audio_sampling_freq = MIX_DEFAULT_FREQUENCY;
 int audio_max_amp = 32767;
+int random_seed;
 
 int main(int argc, char **argv)
 {
@@ -59,6 +61,9 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    random_seed = ts.tv_nsec;
     api_init(mrb);
 
     if (lib_init(mrb)) {

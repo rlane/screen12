@@ -516,4 +516,5 @@ void api_init(mrb_state *mrb)
     mrb_define_const(mrb, mrb->kernel_module, "SCREEN_HEIGHT", mrb_fixnum_value(screen_height));
     mrb_define_const(mrb, mrb->kernel_module, "AUDIO_SAMPLING_FREQ", mrb_fixnum_value(audio_sampling_freq));
     mrb_define_const(mrb, mrb->kernel_module, "AUDIO_MAX_AMP", mrb_fixnum_value(audio_max_amp));
+    mrb_define_const(mrb, mrb->kernel_module, "RANDOM_SEED", mrb_fixnum_value(random_seed));
 }

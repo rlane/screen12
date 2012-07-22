@@ -2,8 +2,8 @@
 class PRNG
   MAX = 2147483647
 
-  def initialize seed=42
-    @state = seed
+  def initialize seed=nil
+    @state = seed || $lib_prng.next/2
   end
 
   def next
@@ -16,7 +16,7 @@ class PRNG
   end
 end
 
-$lib_prng = PRNG.new 1
+$lib_prng = PRNG.new RANDOM_SEED
 
 # Returns a random floating point number between low and high
 def random low, high
