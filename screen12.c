@@ -42,12 +42,13 @@ int main(int argc, char **argv)
     mrb_state *mrb = mrb_open();
 
     if (mrb == NULL) {
-        fprintf(stderr, "Invalid mrb_state, exiting mruby");
+        fprintf(stderr, "Failed to create Ruby interpreter\n");
         return EXIT_FAILURE;
     }
     
     mrb_irep *main_irep = parse_file(mrb, path);
     if (main_irep == NULL) {
+        fprintf(stderr, "Failed to parse file\n");
         return 1;
     }
 
@@ -67,11 +68,13 @@ int main(int argc, char **argv)
     api_init(mrb);
 
     if (lib_init(mrb)) {
+        fprintf(stderr, "Failed to initialize libraries\n");
         return 1;
     }
 
     mrb_run(mrb, mrb_proc_new(mrb, main_irep), mrb_top_self(mrb));
     if (mrb->exc) {
+        fprintf(stderr, "Failed to run program\n");
         mrb_p(mrb, mrb_obj_value(mrb->exc));
         return 1;
     }
@@ -100,7 +103,7 @@ static mrb_irep *parse_file(mrb_state *mrb, const char *filename)
         return NULL;
     }
 
-    int n = mrb_generate_code(mrb, p->tree);
+    int n = mrb_generate_code(mrb, p);
     if (n < 0) {
         fprintf(stderr, "failed to generate code for %s\n", filename);
         return NULL;
